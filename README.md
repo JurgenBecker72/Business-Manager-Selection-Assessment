@@ -17,12 +17,12 @@
 ---
 
 <div align="center">
-<img src="BM_Project_Flow.svg" alt="Business Manager Assessment — End-to-End Project Methodology Flow" width="100%"/>
+<img src="BM_Methodology_Overview.svg" alt="Business Manager Assessment — Design & Methodology Overview" width="100%"/>
 </div>
 
 ---
 
-## 📋 Project Overview
+## Project Overview
 
 This repository documents the end-to-end psychometric validation of a revised **Business Manager (BM) Selection Assessment** commissioned by a major financial services institution (anonymised as *Client A*). The project addressed a critical limitation in the incumbent assessment battery: insufficient differentiation between candidates on technical knowledge alone.
 
@@ -32,7 +32,7 @@ The revised tool introduces a structured **behavioural case study** targeting fo
 
 ---
 
-## 🗂️ Repository Contents
+## Repository Contents
 
 | File | Type | Description |
 |------|------|-------------|
@@ -44,7 +44,7 @@ The revised tool introduces a structured **behavioural case study** targeting fo
 
 ---
 
-## 🧩 Competency Framework
+## Competency Framework
 
 The revised case study measures four behavioural competencies identified through structured SME workshops and job analysis:
 
@@ -57,7 +57,7 @@ The revised case study measures four behavioural competencies identified through
 
 ---
 
-## 🔬 Methodology
+## Methodology
 
 ### Assessment Structure
 
@@ -96,7 +96,7 @@ The revised case study measures four behavioural competencies identified through
 
 ---
 
-## 📊 Key Statistics at a Glance
+## Key Statistics at a Glance
 
 | Metric | Value |
 |--------|-------|
@@ -111,7 +111,7 @@ The revised case study measures four behavioural competencies identified through
 
 ---
 
-## 📈 Large-Sample Simulation Study
+## Large-Sample Simulation Study
 
 Given the small pilot sample (n=27), a **multivariate normal simulation** was employed to assess parameter stability before deployment decisions:
 
@@ -122,7 +122,7 @@ Given the small pilot sample (n=27), a **multivariate normal simulation** was em
 
 ---
 
-## 🧪 IRT Analysis Summary
+## IRT Analysis Summary
 
 ### Models Applied
 - **2PL** (Two-Parameter Logistic) for binary items (Sections 1A and 1B)
@@ -146,7 +146,7 @@ Given the small pilot sample (n=27), a **multivariate normal simulation** was em
 
 ---
 
-## ⚖️ Equity & Fairness Analysis
+## Equity & Fairness Analysis
 
 Demographic breakdowns were examined across race, gender, qualification level, and organisational experience. Key observations:
 
@@ -157,7 +157,7 @@ Demographic breakdowns were examined across race, gender, qualification level, a
 
 ---
 
-## 📌 Key Findings
+## Key Findings
 
 1. **Inter-rater reliability** was strong for RM and CF, lower for SOD — confirming the need for structured assessor calibration training
 2. **Section 1B** (True/False) showed poor psychometric properties and should be substantially revised
@@ -167,7 +167,7 @@ Demographic breakdowns were examined across race, gender, qualification level, a
 
 ---
 
-## ✅ Recommendations
+## Recommendations
 
 - [ ] Deploy revised case study in phased validation mode — target n ≥ 150 before formal predictive validity reporting
 - [ ] Revise or remove flagged Section 1A items based on IRT discrimination/fit diagnostics
@@ -178,7 +178,7 @@ Demographic breakdowns were examined across race, gender, qualification level, a
 
 ---
 
-## 👤 Author & Contact
+## Author & Contact
 
 **Jurgen Becker, PhD**
 Independent Researcher & Assessment Consultant

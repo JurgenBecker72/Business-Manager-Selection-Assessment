@@ -1,0 +1,320 @@
+<svg viewBox="0 0 1320 852" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F2F3F8;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#E8EAF2;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="objGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4A3280;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#6B4DB6;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="mtgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F0EBF9;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#E8E0F5;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="card1Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#5B3FA0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#4A3280;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="card2Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6B4DB6;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#5840A0;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="card3Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#7B60C4;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#6350B0;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="footGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3A2870;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#5B3FA0;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-4%" y="-4%" width="108%" height="116%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3A2870" flood-opacity="0.18"/>
+    </filter>
+    <filter id="softShadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3A2870" flood-opacity="0.12"/>
+    </filter>
+    <marker id="flowArrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7B60C4"/>
+    </marker>
+    <marker id="mtgArrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#9B7FE8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1320" height="852" fill="url(#bgGrad)"/>
+
+  <!-- ══ TITLE BAR (FIXED — 3 separate lines, no overlap) ══ -->
+  <rect x="0" y="0" width="1320" height="72" fill="#2D2050"/>
+  <rect x="0" y="69" width="1320" height="3" fill="#9B7FE8"/>
+  <text x="660" y="19" font-size="10.5" fill="#C0AEE8" text-anchor="middle" letter-spacing="3" font-weight="400">BUSINESS MANAGER SELECTION ASSESSMENT</text>
+  <text x="660" y="42" font-size="17" fill="white" text-anchor="middle" font-weight="600">Psychometric Validation Study · Phase 1 Pilot</text>
+  <text x="660" y="61" font-size="12.5" fill="#C0AEE8" text-anchor="middle" font-style="italic" font-weight="300">Design &amp; Methodology Overview</text>
+
+  <!-- ══ OBJECTIVE BANNER ══ -->
+  <rect x="36" y="88" width="1248" height="76" rx="10" fill="url(#objGrad)" filter="url(#softShadow)"/>
+  <!-- Target icon -->
+  <circle cx="90" cy="126" r="26" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="90" cy="126" r="20" fill="none" stroke="white" stroke-width="2.5"/>
+  <circle cx="90" cy="126" r="12" fill="none" stroke="white" stroke-width="2"/>
+  <circle cx="90" cy="126" r="5" fill="white"/>
+  <line x1="90" y1="102" x2="90" y2="106" stroke="white" stroke-width="2.5"/>
+  <line x1="90" y1="146" x2="90" y2="150" stroke="white" stroke-width="2.5"/>
+  <line x1="66" y1="126" x2="70" y2="126" stroke="white" stroke-width="2.5"/>
+  <line x1="110" y1="126" x2="114" y2="126" stroke="white" stroke-width="2.5"/>
+  <text x="128" y="112" font-size="12" fill="rgba(255,255,255,0.8)" font-style="italic" font-weight="600">Objective:</text>
+  <line x1="128" y1="117" x2="1268" y2="117" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+  <text x="128" y="135" font-size="13.5" fill="white" font-weight="600">Validate a revised Business Manager Selection Assessment measuring technical knowledge and four behavioural competencies</text>
+  <text x="128" y="154" font-size="13.5" fill="rgba(255,255,255,0.88)">for a major financial services institution — spanning instrument design, iterative client consultation, piloting, CTT/IRT analysis, and simulation.</text>
+
+  <!-- ══ ANALYSIS FLOW HEADER ══ -->
+  <text x="660" y="198" font-size="13" fill="#4A3280" text-anchor="middle" font-weight="700" letter-spacing="2">ANALYSIS FLOW</text>
+  <line x1="36" y1="201" x2="530" y2="201" stroke="#B8AADC" stroke-width="1"/>
+  <line x1="790" y1="201" x2="1284" y2="201" stroke="#B8AADC" stroke-width="1"/>
+
+  <!-- ══ CLIENT MEETINGS STRIP (NEW) ══ -->
+  <rect x="36" y="206" width="756" height="54" rx="8" fill="url(#mtgGrad)" stroke="#C4B2E0" stroke-width="1" filter="url(#softShadow)"/>
+  <rect x="36" y="206" width="7" height="54" rx="3" fill="#5B3FA0"/>
+
+  <!-- Meeting icon: two clearly separated person silhouettes -->
+  <circle cx="58" cy="224" r="7" fill="#9B7FE8"/>
+  <path d="M48 238 Q58 231 68 238" fill="#9B7FE8" opacity="0.8"/>
+  <circle cx="76" cy="221" r="7" fill="#7B60C4"/>
+  <path d="M66 235 Q76 228 86 235" fill="#7B60C4"/>
+
+  <!-- Label text — clearly left of separator -->
+  <text x="98" y="222" font-size="11.5" fill="#3A2070" font-weight="700">Consecutive Client Consultations</text>
+  <text x="98" y="240" font-size="10" fill="#6B50A0">Structured client meetings driving iterative instrument conceptualisation, redesign and rebuilding prior to piloting</text>
+
+  <!-- Vertical separator -->
+  <line x1="444" y1="213" x2="444" y2="253" stroke="#C4B2E0" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- Timeline base line -->
+  <line x1="458" y1="233" x2="766" y2="233" stroke="#C4B2E0" stroke-width="1.5"/>
+
+  <!-- Meeting nodes: numbered only, evenly spaced, no cramped labels -->
+  <circle cx="470" cy="233" r="11" fill="#4A3280" stroke="white" stroke-width="1.5"/>
+  <text x="470" y="237" font-size="9" fill="white" text-anchor="middle" font-weight="700">M1</text>
+
+  <circle cx="524" cy="233" r="11" fill="#5B3FA0" stroke="white" stroke-width="1.5"/>
+  <text x="524" y="237" font-size="9" fill="white" text-anchor="middle" font-weight="700">M2</text>
+
+  <circle cx="578" cy="233" r="11" fill="#6B4DB6" stroke="white" stroke-width="1.5"/>
+  <text x="578" y="237" font-size="9" fill="white" text-anchor="middle" font-weight="700">M3</text>
+
+  <circle cx="632" cy="233" r="11" fill="#7B60C4" stroke="white" stroke-width="1.5"/>
+  <text x="632" y="237" font-size="9" fill="white" text-anchor="middle" font-weight="700">M4</text>
+
+  <circle cx="686" cy="233" r="11" fill="#8B70D0" stroke="white" stroke-width="1.5"/>
+  <text x="686" y="237" font-size="9" fill="white" text-anchor="middle" font-weight="700">M5</text>
+
+  <circle cx="740" cy="233" r="11" fill="#9B7FE8" stroke="white" stroke-width="1.5"/>
+  <text x="740" y="237" font-size="9" fill="white" text-anchor="middle" font-weight="700">M6</text>
+
+  <!-- Arrow indicating forward progression -->
+  <line x1="753" y1="233" x2="780" y2="233" stroke="#9B7FE8" stroke-width="2" marker-end="url(#mtgArrow)"/>
+
+  <!-- ══ PHASE BOXES ══ -->
+
+  <!-- Phase 1: Conceptualisation -->
+  <rect x="36" y="262" width="196" height="110" rx="12" fill="white" filter="url(#softShadow)"/>
+  <rect x="36" y="262" width="196" height="5" rx="5" fill="#4A3280"/>
+  <circle cx="134" cy="290" r="17" fill="#4A3280"/>
+  <text x="134" y="295" font-size="13" fill="white" text-anchor="middle" font-weight="700">01</text>
+  <text x="134" y="326" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Conceptualisation</text>
+  <text x="134" y="342" font-size="10" fill="#7B70A0" text-anchor="middle">SME Workshops · Job Analysis</text>
+  <text x="134" y="357" font-size="10" fill="#7B70A0" text-anchor="middle">Competency Identification</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="234" y1="317" x2="272" y2="317" stroke="#7B60C4" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+  <!-- Phase 2: Development -->
+  <rect x="274" y="262" width="196" height="110" rx="12" fill="white" filter="url(#softShadow)"/>
+  <rect x="274" y="262" width="196" height="5" rx="5" fill="#5B3FA0"/>
+  <circle cx="372" cy="290" r="17" fill="#5B3FA0"/>
+  <text x="372" y="295" font-size="13" fill="white" text-anchor="middle" font-weight="700">02</text>
+  <text x="372" y="326" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Development</text>
+  <text x="372" y="342" font-size="10" fill="#7B70A0" text-anchor="middle">Case Study Authoring</text>
+  <text x="372" y="357" font-size="10" fill="#7B70A0" text-anchor="middle">Scoring Rubric · Rating Form</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="472" y1="317" x2="510" y2="317" stroke="#7B60C4" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+  <!-- Phase 3: Pre-Pilot -->
+  <rect x="512" y="262" width="196" height="110" rx="12" fill="white" filter="url(#softShadow)"/>
+  <rect x="512" y="262" width="196" height="5" rx="5" fill="#6B4DB6"/>
+  <circle cx="610" cy="290" r="17" fill="#6B4DB6"/>
+  <text x="610" y="295" font-size="13" fill="white" text-anchor="middle" font-weight="700">03</text>
+  <text x="610" y="326" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Pre-Pilot</text>
+  <text x="610" y="342" font-size="10" fill="#7B70A0" text-anchor="middle">n=10 Internal Candidates</text>
+  <text x="610" y="357" font-size="10" fill="#7B70A0" text-anchor="middle">Dual-Marker · IRR 93%</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="710" y1="317" x2="748" y2="317" stroke="#7B60C4" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+  <!-- Phase 4: Piloting -->
+  <rect x="750" y="262" width="196" height="110" rx="12" fill="white" filter="url(#softShadow)"/>
+  <rect x="750" y="262" width="196" height="5" rx="5" fill="#7B60C4"/>
+  <circle cx="848" cy="290" r="17" fill="#7B60C4"/>
+  <text x="848" y="295" font-size="13" fill="white" text-anchor="middle" font-weight="700">04</text>
+  <text x="848" y="326" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Piloting</text>
+  <text x="848" y="342" font-size="10" fill="#7B70A0" text-anchor="middle">2 Operational Cohorts</text>
+  <text x="848" y="357" font-size="10" fill="#7B70A0" text-anchor="middle">n=27 Usable Records</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="948" y1="317" x2="986" y2="317" stroke="#7B60C4" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+  <!-- Phase 5: Validation -->
+  <rect x="988" y="262" width="196" height="110" rx="12" fill="white" filter="url(#softShadow)"/>
+  <rect x="988" y="262" width="196" height="5" rx="5" fill="#9B7FE8"/>
+  <circle cx="1086" cy="290" r="17" fill="#9B7FE8"/>
+  <text x="1086" y="295" font-size="13" fill="white" text-anchor="middle" font-weight="700">05</text>
+  <text x="1086" y="326" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Validation</text>
+  <text x="1086" y="342" font-size="10" fill="#7B70A0" text-anchor="middle">CTT · IRT · Simulation</text>
+  <text x="1086" y="357" font-size="10" fill="#7B70A0" text-anchor="middle">Equity Analysis · Reporting</text>
+
+  <!-- ══ THREE SECTION CARDS (y shifted +52) ══ -->
+  <rect x="36" y="394" width="390" height="230" rx="12" fill="url(#card1Grad)" filter="url(#cardShadow)"/>
+  <rect x="465" y="394" width="390" height="230" rx="12" fill="url(#card2Grad)" filter="url(#cardShadow)"/>
+  <rect x="894" y="394" width="390" height="230" rx="12" fill="url(#card3Grad)" filter="url(#cardShadow)"/>
+
+  <!-- Card 1: Descriptive & Reliability -->
+  <rect x="58" y="412" width="36" height="44" rx="4" fill="rgba(255,255,255,0.2)"/>
+  <rect x="64" y="408" width="24" height="8" rx="3" fill="rgba(255,255,255,0.5)"/>
+  <line x1="65" y1="424" x2="86" y2="424" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <line x1="65" y1="431" x2="86" y2="431" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <line x1="65" y1="438" x2="80" y2="438" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <circle cx="86" cy="438" r="5" fill="#9B7FE8"/>
+  <polyline points="83,438 85,440 89,435" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <text x="108" y="428" font-size="13.5" fill="white" font-weight="700">Descriptive Statistics</text>
+  <text x="108" y="446" font-size="10" fill="rgba(255,255,255,0.75)" letter-spacing="1">&amp; RELIABILITY ANALYSIS</text>
+  <line x1="56" y1="460" x2="410" y2="460" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="66" y="482" font-size="11.5" fill="rgba(255,255,255,0.92)">Outlier detection and missingness handling</text>
+  <text x="66" y="502" font-size="11.5" fill="rgba(255,255,255,0.92)">Score distributions per section and subgroup</text>
+  <text x="66" y="522" font-size="11.5" fill="rgba(255,255,255,0.92)">Inter-rater reliability: internal 93%, ext. 73%</text>
+  <text x="66" y="542" font-size="11.5" fill="rgba(255,255,255,0.92)">Cronbach's α and McDonald's ω reliability</text>
+  <text x="66" y="562" font-size="11.5" fill="rgba(255,255,255,0.92)">Item-total correlations and EFA loadings</text>
+  <rect x="56" y="580" width="354" height="30" rx="6" fill="rgba(255,255,255,0.15)"/>
+  <text x="233" y="600" font-size="10.5" fill="white" text-anchor="middle" font-weight="600">Tools: Excel · R · SPSS</text>
+
+  <!-- Card 2: IRT & Simulation -->
+  <rect x="485" y="408" width="40" height="8" rx="2" fill="rgba(255,255,255,0.5)"/>
+  <line x1="505" y1="416" x2="505" y2="452" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+  <line x1="490" y1="427" x2="520" y2="427" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <ellipse cx="493" cy="432" rx="9" ry="5" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+  <ellipse cx="517" cy="430" rx="9" ry="5" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+  <text x="538" y="428" font-size="13.5" fill="white" font-weight="700">IRT Modelling</text>
+  <text x="538" y="446" font-size="10" fill="rgba(255,255,255,0.75)" letter-spacing="1">&amp; SIMULATION STUDY</text>
+  <line x1="485" y1="460" x2="839" y2="460" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="495" y="482" font-size="11.5" fill="rgba(255,255,255,0.92)">2PL model: MCQ and True/False items</text>
+  <text x="495" y="502" font-size="11.5" fill="rgba(255,255,255,0.92)">GRM model: Behavioural rating scales</text>
+  <text x="495" y="522" font-size="11.5" fill="rgba(255,255,255,0.92)">χ² diagnostics · item fit and flagging</text>
+  <text x="495" y="542" font-size="11.5" fill="rgba(255,255,255,0.92)">MVN simulation: n=250 and n=500</text>
+  <text x="495" y="562" font-size="11.5" fill="rgba(255,255,255,0.92)">Parameter stability across sample sizes</text>
+  <rect x="485" y="580" width="354" height="30" rx="6" fill="rgba(255,255,255,0.15)"/>
+  <text x="662" y="600" font-size="10.5" fill="white" text-anchor="middle" font-weight="600">Models: 2PL · GRM · MVNorm (R)</text>
+
+  <!-- Card 3: Validity & Prediction -->
+  <circle cx="930" cy="426" r="12" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="916" cy="437" r="9" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="944" cy="437" r="9" fill="rgba(255,255,255,0.2)"/>
+  <line x1="930" y1="438" x2="930" y2="454" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"/>
+  <path d="M916 452 Q918 440 928 438 Q938 436 942 428" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="910" y1="454" x2="946" y2="454" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <line x1="910" y1="454" x2="910" y2="424" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <text x="960" y="428" font-size="13.5" fill="white" font-weight="700">Validity &amp; Prediction</text>
+  <text x="960" y="446" font-size="10" fill="rgba(255,255,255,0.75)" letter-spacing="1">REGRESSION · EQUITY ANALYSIS</text>
+  <line x1="914" y1="460" x2="1268" y2="460" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="924" y="482" font-size="11.5" fill="rgba(255,255,255,0.92)">Multiple regression: CE strongest predictor</text>
+  <text x="924" y="502" font-size="11.5" fill="rgba(255,255,255,0.92)">Equity review: race, gender, qualification</text>
+  <text x="924" y="522" font-size="11.5" fill="rgba(255,255,255,0.92)">Content, construct and criterion validity</text>
+  <text x="924" y="542" font-size="11.5" fill="rgba(255,255,255,0.92)">DIF analysis (pending scale validation)</text>
+  <text x="924" y="562" font-size="11.5" fill="rgba(255,255,255,0.92)">Interactive HTML dashboard and reporting</text>
+  <rect x="914" y="580" width="354" height="30" rx="6" fill="rgba(255,255,255,0.15)"/>
+  <text x="1091" y="600" font-size="10.5" fill="white" text-anchor="middle" font-weight="600">Tools: R · SPSS · Tableau / HTML</text>
+
+  <!-- ══ KEY OUTPUTS STRIP (y shifted +52) ══ -->
+  <rect x="36" y="646" width="1248" height="102" rx="12" fill="white" filter="url(#softShadow)"/>
+  <rect x="36" y="646" width="1248" height="4" rx="3" fill="url(#footGrad)"/>
+  <text x="660" y="670" font-size="11" fill="#4A3280" text-anchor="middle" font-weight="700" letter-spacing="2">KEY OUTPUTS</text>
+
+  <!-- Output 1: Technical Manual -->
+  <rect x="62" y="676" width="56" height="56" rx="8" fill="#EDE8F8"/>
+  <rect x="75" y="684" width="30" height="38" rx="3" fill="#5B3FA0"/>
+  <rect x="79" y="690" width="22" height="2" rx="1" fill="rgba(255,255,255,0.7)"/>
+  <rect x="79" y="695" width="22" height="2" rx="1" fill="rgba(255,255,255,0.7)"/>
+  <rect x="79" y="700" width="16" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+  <rect x="79" y="705" width="19" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+  <rect x="79" y="710" width="14" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+  <text x="90" y="744" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Technical Manual</text>
+
+  <!-- Output 2: Dataset -->
+  <rect x="322" y="676" width="56" height="56" rx="8" fill="#EDE8F8"/>
+  <rect x="334" y="683" width="32" height="38" rx="2" fill="#5B3FA0"/>
+  <rect x="334" y="683" width="32" height="10" rx="2" fill="#7B60C4"/>
+  <line x1="348" y1="683" x2="348" y2="721" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <line x1="334" y1="696" x2="366" y2="696" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <line x1="334" y1="704" x2="366" y2="704" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <line x1="334" y1="712" x2="366" y2="712" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <text x="350" y="744" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Pilot Dataset (n=27)</text>
+
+  <!-- Output 3: IRR -->
+  <rect x="582" y="676" width="56" height="56" rx="8" fill="#EDE8F8"/>
+  <circle cx="610" cy="704" r="20" fill="none" stroke="#9B7FE8" stroke-width="2.5"/>
+  <circle cx="610" cy="704" r="13" fill="none" stroke="#7B60C4" stroke-width="2"/>
+  <circle cx="610" cy="704" r="6" fill="#5B3FA0"/>
+  <text x="610" y="744" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Inter-Rater Reliability</text>
+
+  <!-- Output 4: IRT Metrics -->
+  <rect x="842" y="676" width="56" height="56" rx="8" fill="#EDE8F8"/>
+  <rect x="852" y="707" width="8" height="12" rx="1" fill="#9B7FE8"/>
+  <rect x="862" y="699" width="8" height="20" rx="1" fill="#7B60C4"/>
+  <rect x="872" y="690" width="8" height="29" rx="1" fill="#5B3FA0"/>
+  <line x1="850" y1="720" x2="884" y2="720" stroke="#4A3280" stroke-width="1.5"/>
+  <line x1="850" y1="688" x2="850" y2="720" stroke="#4A3280" stroke-width="1.5"/>
+  <text x="870" y="744" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">CTT / IRT Metrics</text>
+
+  <!-- Output 5: Dashboard -->
+  <rect x="1102" y="676" width="56" height="56" rx="8" fill="#EDE8F8"/>
+  <rect x="1111" y="683" width="38" height="28" rx="3" fill="#5B3FA0"/>
+  <rect x="1114" y="686" width="32" height="22" rx="1" fill="#7B60C4"/>
+  <polyline points="1117,704 1122,697 1128,700 1134,693 1140,696" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/>
+  <rect x="1125" y="711" width="10" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
+  <text x="1130" y="744" font-size="11" fill="#2D2050" text-anchor="middle" font-weight="700">Interactive Dashboard</text>
+
+  <!-- ══ FOOTER (y shifted +52) ══ -->
+  <rect x="0" y="766" width="1320" height="86" fill="#2D2050"/>
+  <line x1="0" y1="766" x2="1320" y2="766" stroke="#9B7FE8" stroke-width="2"/>
+
+  <!-- Competency badges -->
+  <rect x="36" y="782" width="90" height="36" rx="6" fill="#4A3280"/>
+  <text x="81" y="802" font-size="10" fill="white" text-anchor="middle" font-weight="700">RM</text>
+  <text x="81" y="816" font-size="8.5" fill="rgba(255,255,255,0.7)" text-anchor="middle">Relationship Mgmt</text>
+
+  <rect x="140" y="782" width="128" height="36" rx="6" fill="#4A3280"/>
+  <text x="204" y="802" font-size="10" fill="white" text-anchor="middle" font-weight="700">CE</text>
+  <text x="204" y="816" font-size="8.5" fill="rgba(255,255,255,0.7)" text-anchor="middle">Communication Effectiveness</text>
+
+  <rect x="282" y="782" width="90" height="36" rx="6" fill="#4A3280"/>
+  <text x="327" y="802" font-size="10" fill="white" text-anchor="middle" font-weight="700">CF</text>
+  <text x="327" y="816" font-size="8.5" fill="rgba(255,255,255,0.7)" text-anchor="middle">Client Focus</text>
+
+  <rect x="386" y="782" width="148" height="36" rx="6" fill="#4A3280"/>
+  <text x="460" y="802" font-size="10" fill="white" text-anchor="middle" font-weight="700">SOD</text>
+  <text x="460" y="816" font-size="8.5" fill="rgba(255,255,255,0.7)" text-anchor="middle">Strategic Opp. Development</text>
+
+  <!-- Status badge -->
+  <rect x="920" y="782" width="160" height="36" rx="6" fill="rgba(155,127,232,0.2)" stroke="#9B7FE8" stroke-width="1"/>
+  <circle cx="940" cy="800" r="5" fill="#6FAD7A"/>
+  <text x="960" y="804" font-size="10" fill="rgba(255,255,255,0.9)" font-weight="600">Phase 1 · Complete</text>
+
+  <!-- Pilot n badge -->
+  <rect x="1094" y="782" width="100" height="36" rx="6" fill="rgba(155,127,232,0.2)" stroke="#9B7FE8" stroke-width="1"/>
+  <text x="1144" y="804" font-size="10" fill="rgba(255,255,255,0.9)" text-anchor="middle" font-weight="600">Pilot n = 27</text>
+
+  <!-- Right credit -->
+  <text x="1284" y="800" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="end">Jurgen Becker, PhD · AX Consult Group</text>
+  <text x="1284" y="816" font-size="9" fill="rgba(155,127,232,0.7)" text-anchor="end">ax-assess.com</text>
+
+</svg>
