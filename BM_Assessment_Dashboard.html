@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Manager Assessment — Validation Study Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --navy:    #0F2240;
+    --navy2:   #1A3560;
+    --blue:    #2E75B6;
+    --blue2:   #4A9FD4;
+    --teal:    #2EB8A8;
+    --gold:    #E8A838;
+    --coral:   #E06040;
+    --sage:    #6FAD7A;
+    --mist:    #F4F7FB;
+    --slate:   #8898A8;
+    --border:  #DDE4EE;
+    --white:   #FFFFFF;
+    --text:    #1A2940;
+    --sub:     #5A6A7A;
+
+    --rm:  #2E75B6;
+    --ce:  #2EB8A8;
+    --cf:  #6FAD7A;
+    --sod: #E8A838;
+
+    --exceeding:   #2EB8A8;
+    --performing:  #2E75B6;
+    --offstandard: #E06040;
+    --notavail:    #BCC8D8;
+    --unrated:     #8898A8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--mist);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy);
+    padding: 28px 40px 22px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 3px solid #E8A838;
+  }
+  header h1 {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 22px;
+    color: var(--white);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+  header h1 span { color: var(--blue2); font-style: italic; }
+  .header-meta {
+    text-align: right;
+    color: var(--slate);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .header-meta strong { color: var(--blue2); }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .filter-bar label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--slate);
+    margin-right: 6px;
+  }
+  .filter-bar select {
+    padding: 6px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--mist);
+    cursor: pointer;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .filter-bar select:hover, .filter-bar select:focus { border-color: var(--blue); }
+  .filter-group { display: flex; align-items: center; }
+  #resetBtn {
+    margin-left: auto;
+    padding: 7px 18px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--sub);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  #resetBtn:hover { border-color: var(--blue); color: var(--blue); }
+  #nLabel {
+    font-size: 12px;
+    color: var(--slate);
+    background: var(--mist);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+  }
+  #nLabel strong { color: var(--navy); }
+
+  /* ── MAIN LAYOUT ── */
+  main { padding: 28px 40px 48px; }
+
+  /* ── KPI STRIP ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 18px 16px 14px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .kpi.k1::before { background: var(--blue); }
+  .kpi.k2::before { background: var(--teal); }
+  .kpi.k3::before { background: var(--gold); }
+  .kpi.k4::before { background: var(--rm); }
+  .kpi.k5::before { background: var(--ce); }
+  .kpi.k6::before { background: var(--sod); }
+  .kpi-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--slate);
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 28px;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .kpi-sub { font-size: 11px; color: var(--sub); margin-top: 4px; }
+
+  /* ── GRID ── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .span2 { grid-column: span 2; }
+  .span3 { grid-column: span 3; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 20px 22px 18px;
+    position: relative;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--slate);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .chart-wrap { position: relative; }
+  .chart-wrap canvas { max-width: 100%; }
+
+  /* ── SCATTER CONTROLS ── */
+  .scatter-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .scatter-controls label { font-size: 11px; font-weight: 600; color: var(--slate); text-transform: uppercase; letter-spacing: 0.07em; }
+  .scatter-controls select {
+    padding: 5px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--mist);
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* ── COMPETENCY RADAR LEGEND ── */
+  .comp-legend {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .comp-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--sub);
+  }
+  .comp-legend-item span {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── PERFORMANCE BADGE ── */
+  .perf-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  thead th {
+    background: var(--mist);
+    padding: 9px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--slate);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { background: #EBF0F8; color: var(--blue); }
+  thead th.sorted { color: var(--blue); }
+  tbody tr {
+    border-bottom: 1px solid #F0F4F8;
+    transition: background .15s;
+  }
+  tbody tr:hover { background: #F7FAFF; }
+  tbody td { padding: 8px 12px; vertical-align: middle; }
+  .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .score-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    flex: 1;
+    overflow: hidden;
+  }
+  .score-bar-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+  .score-num { font-size: 11px; font-weight: 600; color: var(--navy); min-width: 32px; }
+
+  /* ── DISTRIBUTION BARS ── */
+  .dist-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .dist-label { font-size: 11px; color: var(--sub); min-width: 90px; text-align: right; }
+  .dist-bar { flex: 1; height: 22px; border-radius: 4px; background: var(--border); overflow: hidden; position: relative; }
+  .dist-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 10px; font-weight: 600; color: white; transition: width .5s ease; }
+  .dist-count { font-size: 11px; font-weight: 600; color: var(--navy); min-width: 20px; }
+
+  /* ── SECTION DIVIDER ── */
+  .section-head {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 14px;
+    color: var(--navy2);
+    margin-bottom: 14px;
+    margin-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-head::before {
+    content: '';
+    width: 4px; height: 18px;
+    border-radius: 2px;
+    background: var(--blue);
+    flex-shrink: 0;
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip-box {
+    position: absolute;
+    background: var(--navy);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    line-height: 1.6;
+    pointer-events: none;
+    z-index: 999;
+    display: none;
+    max-width: 200px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+
+  /* ── FOOTNOTE ── */
+  .footnote {
+    font-size: 11px;
+    color: var(--slate);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  @media (max-width: 1100px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .span3 { grid-column: span 2; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:16px">
+    <div style="width:4px;height:52px;background:#E8A838;border-radius:2px;flex-shrink:0"></div>
+    <div>
+      <div style="font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:.18em;color:#BCC8D8;margin-bottom:5px;">AX Consult Group · Business Services Division</div>
+      <h1>Business Manager Assessment<br><span>Validation Study — Pilot Dataset</span></h1>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div><strong>n = 27</strong> candidates · Phase 1 Pilot</div>
+    <div>Section 1: MCQ + T/F &nbsp;|&nbsp; Section 2: Behavioural</div>
+    <div>Competencies: RM · CE · CF · SOD</div>
+    <div style="margin-top:4px;font-size:10px;color:#E8A838">ax-assess.com</div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <div class="filter-group"><label>Performance</label>
+    <select id="f-perf">
+      <option value="">All</option>
+      <option>Exceeding</option>
+      <option>Performing</option>
+      <option>Off standard</option>
+      <option>Not available</option>
+      <option>Unrated</option>
+    </select>
+  </div>
+  <div class="filter-group"><label>Gender</label>
+    <select id="f-gender">
+      <option value="">All</option>
+      <option>Male</option>
+      <option>Female</option>
+    </select>
+  </div>
+  <div class="filter-group"><label>Race</label>
+    <select id="f-race">
+      <option value="">All</option>
+      <option>White</option>
+      <option>Asian</option>
+      <option>African American</option>
+      <option>Mixed Race</option>
+    </select>
+  </div>
+  <div class="filter-group"><label>Qualification</label>
+    <select id="f-qual">
+      <option value="">All</option>
+      <option>Postgraduate</option>
+      <option>Undergraduate</option>
+      <option>Non-degree</option>
+    </select>
+  </div>
+  <div class="filter-group"><label>Experience</label>
+    <select id="f-exp">
+      <option value="">All</option>
+      <option>No working experience</option>
+      <option>Less than 2 years</option>
+      <option>2 – 5 years</option>
+      <option>6 – 10 years</option>
+      <option>10 – 15 years</option>
+      <option>15 – 20 years</option>
+      <option>more than 20 years</option>
+    </select>
+  </div>
+  <span id="nLabel"><strong id="nCount">27</strong> / 27 candidates</span>
+  <button id="resetBtn">↺ Reset filters</button>
+</div>
+
+<main>
+
+  <!-- KPI Strip -->
+  <div class="kpi-row" id="kpiRow">
+    <div class="kpi k1"><div class="kpi-label">Avg Grand Total</div><div class="kpi-value" id="kpi-grand">—</div><div class="kpi-sub">% correct overall</div></div>
+    <div class="kpi k2"><div class="kpi-label">Avg Section 1</div><div class="kpi-value" id="kpi-s1">—</div><div class="kpi-sub">MCQ + T/F score</div></div>
+    <div class="kpi k3"><div class="kpi-label">Avg Section 2</div><div class="kpi-value" id="kpi-s2">—</div><div class="kpi-sub">Behavioural score</div></div>
+    <div class="kpi k4"><div class="kpi-label">Avg RM</div><div class="kpi-value" id="kpi-rm">—</div><div class="kpi-sub">Relationship Mgmt /5</div></div>
+    <div class="kpi k5"><div class="kpi-label">Avg CE</div><div class="kpi-value" id="kpi-ce">—</div><div class="kpi-sub">Comm Effectiveness /5</div></div>
+    <div class="kpi k6"><div class="kpi-label">Avg SOD</div><div class="kpi-value" id="kpi-sod">—</div><div class="kpi-sub">Strategic Opp Dev /5</div></div>
+  </div>
+
+  <!-- Row 1: Performance dist + Score dist + Demographic -->
+  <p class="section-head">Score Distributions &amp; Demographics</p>
+  <div class="grid-3" style="margin-bottom:18px;">
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--blue)"></span>Performance Distribution</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chartPerf"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--teal)"></span>Grand Total Score Spread</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chartGrandHist"></canvas></div>
+      <p class="footnote" style="margin-top:6px;">Distribution across all candidates with available scores (n=24)</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--gold)"></span>Section 1 vs Section 2</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chartSections"></canvas></div>
+    </div>
+
+  </div>
+
+  <div class="grid-4" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--rm)"></span>By Race</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="chartRace"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--ce)"></span>By Gender</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="chartGender"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--cf)"></span>By Qualification</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="chartQual"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--sod)"></span>By Experience</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="chartExp"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Row 2: Competency Analysis -->
+  <p class="section-head">Competency Profile Analysis</p>
+  <div class="grid-3" style="margin-bottom:18px;">
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--navy)"></span>Competency Averages by Performance Group</div>
+      <div class="chart-wrap" style="height:220px"><canvas id="chartCompPerf"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--blue2)"></span>Competency Score Distribution (Box-style)</div>
+      <div class="chart-wrap" style="height:220px"><canvas id="chartCompDist"></canvas></div>
+      <p class="footnote">Each bar shows score spread (min–max) and mean per competency</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--teal)"></span>Competency Radar — Mean by Performance</div>
+      <div class="chart-wrap" style="height:220px"><canvas id="chartRadar"></canvas></div>
+    </div>
+
+  </div>
+
+  <!-- Row 3: Scatter + Correlation -->
+  <p class="section-head">Validity &amp; Predictive Relationships</p>
+  <div class="grid-2" style="margin-bottom:18px;">
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--coral)"></span>Scatter: Assessment Score vs Performance</div>
+      <div class="scatter-controls">
+        <label>X Axis</label>
+        <select id="scatterX">
+          <option value="grand_total">Grand Total %</option>
+          <option value="sect1_pct">Section 1 %</option>
+          <option value="sect2_pct">Section 2 %</option>
+          <option value="rm">RM Score</option>
+          <option value="ce">CE Score</option>
+          <option value="cf">CF Score</option>
+          <option value="sod">SOD Score</option>
+        </select>
+        <label>Colour by</label>
+        <select id="scatterColor">
+          <option value="performance">Performance</option>
+          <option value="race">Race</option>
+          <option value="gender">Gender</option>
+          <option value="qualification">Qualification</option>
+        </select>
+      </div>
+      <div class="chart-wrap" style="height:230px"><canvas id="chartScatter"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--gold)"></span>Mean Score by Performance Group</div>
+      <div class="chart-wrap" style="height:290px"><canvas id="chartMeanPerf"></canvas></div>
+    </div>
+
+  </div>
+
+  <!-- Row 4: Equity Analysis -->
+  <p class="section-head">Equity &amp; Fairness Analysis</p>
+  <div class="grid-2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--rm)"></span>Grand Total % by Race Group</div>
+      <div class="chart-wrap" style="height:220px"><canvas id="chartEquityRace"></canvas></div>
+      <p class="footnote">Bars = mean grand total %; error lines = ±1 SD where n≥3</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--sage)"></span>Section Scores by Gender</div>
+      <div class="chart-wrap" style="height:220px"><canvas id="chartEquityGender"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Candidate Table -->
+  <p class="section-head">Candidate-Level Data</p>
+  <div class="card">
+    <div class="table-wrap">
+      <table id="candidateTable">
+        <thead>
+          <tr>
+            <th data-col="id">Candidate</th>
+            <th data-col="performance">Performance</th>
+            <th data-col="race">Race</th>
+            <th data-col="gender">Gender</th>
+            <th data-col="qualification">Qualification</th>
+            <th data-col="sect1_pct">Sect 1 %</th>
+            <th data-col="sect2_pct">Sect 2 %</th>
+            <th data-col="grand_total">Grand Total %</th>
+            <th data-col="rm">RM</th>
+            <th data-col="ce">CE</th>
+            <th data-col="cf">CF</th>
+            <th data-col="sod">SOD</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <p class="footnote">Click column headers to sort · Filters applied above affect this table</p>
+  </div>
+
+</main>
+
+<div class="tooltip-box" id="tooltipBox"></div>
+
+<script>
+const RAW = [{"id":"Candidate 01","race":"White","gender":"Female","age":48,"qualification":"Postgraduate","org_exp":"2 \u2013 5 years","overall_exp":"2 \u2013 5 years","performance":"Off standard","perf_score":1,"sect1_pct":67.0,"sect2_pct":60.0,"grand_total":63.0,"mcq_score":9,"tf_score":5,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 02","race":"White","gender":"Male","age":51,"qualification":"Postgraduate","org_exp":"10 \u2013 15 years","overall_exp":"more than 20 years","performance":"Not available","perf_score":null,"sect1_pct":48.0,"sect2_pct":80.0,"grand_total":64.0,"mcq_score":5,"tf_score":5,"rm":4.0,"ce":4.0,"cf":4.0,"sod":4.0},{"id":"Candidate 03","race":"Asian","gender":"Male","age":36,"qualification":"Undergraduate","org_exp":"Less than 2 years","overall_exp":"6 \u2013 10 years","performance":"Off standard","perf_score":1,"sect1_pct":52.0,"sect2_pct":85.0,"grand_total":69.0,"mcq_score":6,"tf_score":5,"rm":4.0,"ce":4.0,"cf":5.0,"sod":4.0},{"id":"Candidate 04","race":"White","gender":"Male","age":40,"qualification":"Undergraduate","org_exp":"more than 20 years","overall_exp":"more than 20 years","performance":"Performing","perf_score":2,"sect1_pct":67.0,"sect2_pct":60.0,"grand_total":63.0,"mcq_score":8,"tf_score":6,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 05","race":"African American","gender":"Female","age":36,"qualification":"Postgraduate","org_exp":"10 \u2013 15 years","overall_exp":"more than 20 years","performance":"Off standard","perf_score":1,"sect1_pct":62.0,"sect2_pct":80.0,"grand_total":71.0,"mcq_score":8,"tf_score":5,"rm":4.0,"ce":4.0,"cf":4.0,"sod":4.0},{"id":"Candidate 06","race":"White","gender":"Female","age":40,"qualification":"Undergraduate","org_exp":"Less than 2 years","overall_exp":"15 \u2013 20 years","performance":"Unrated","perf_score":null,"sect1_pct":48.0,"sect2_pct":80.0,"grand_total":64.0,"mcq_score":6,"tf_score":4,"rm":4.0,"ce":4.0,"cf":4.0,"sod":4.0},{"id":"Candidate 07","race":"Asian","gender":"Female","age":33,"qualification":"Postgraduate","org_exp":"Less than 2 years","overall_exp":"6 \u2013 10 years","performance":"Off standard","perf_score":1,"sect1_pct":86.0,"sect2_pct":60.0,"grand_total":73.0,"mcq_score":12,"tf_score":6,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 08","race":"African American","gender":"Female","age":38,"qualification":"Undergraduate","org_exp":"Less than 2 years","overall_exp":"10 \u2013 15 years","performance":"Off standard","perf_score":1,"sect1_pct":48.0,"sect2_pct":60.0,"grand_total":54.0,"mcq_score":6,"tf_score":4,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 09","race":"White","gender":"Male","age":34,"qualification":"Undergraduate","org_exp":"2 \u2013 5 years","overall_exp":"6 \u2013 10 years","performance":"Exceeding","perf_score":3,"sect1_pct":null,"sect2_pct":60.0,"grand_total":null,"mcq_score":10,"tf_score":null,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 10","race":"African American","gender":"Male","age":48,"qualification":"Undergraduate","org_exp":"Less than 2 years","overall_exp":"15 \u2013 20 years","performance":"Not available","perf_score":null,"sect1_pct":null,"sect2_pct":65.0,"grand_total":null,"mcq_score":null,"tf_score":null,"rm":3.0,"ce":3.0,"cf":3.0,"sod":4.0},{"id":"Candidate 11","race":"White","gender":"Male","age":45,"qualification":"Postgraduate","org_exp":"10 \u2013 15 years","overall_exp":"10 \u2013 15 years","performance":"Not available","perf_score":null,"sect1_pct":48.0,"sect2_pct":75.0,"grand_total":61.0,"mcq_score":null,"tf_score":5,"rm":4.0,"ce":4.0,"cf":4.0,"sod":3.0},{"id":"Candidate 12","race":"White","gender":"Female","age":38,"qualification":"Postgraduate","org_exp":"No working experience","overall_exp":"10 \u2013 15 years","performance":"Performing","perf_score":2,"sect1_pct":67.0,"sect2_pct":80.0,"grand_total":73.0,"mcq_score":9,"tf_score":5,"rm":4.0,"ce":4.0,"cf":4.0,"sod":4.0},{"id":"Candidate 13","race":"Asian","gender":"Male","age":59,"qualification":"Undergraduate","org_exp":"more than 20 years","overall_exp":"more than 20 years","performance":"Exceeding","perf_score":3,"sect1_pct":67.0,"sect2_pct":80.0,"grand_total":73.0,"mcq_score":10,"tf_score":4,"rm":4.0,"ce":4.0,"cf":4.0,"sod":4.0},{"id":"Candidate 14","race":"African American","gender":"Female","age":38,"qualification":"Postgraduate","org_exp":"2 \u2013 5 years","overall_exp":"15 \u2013 20 years","performance":"Off standard","perf_score":1,"sect1_pct":43.0,"sect2_pct":60.0,"grand_total":51.0,"mcq_score":4,"tf_score":5,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 15","race":"Asian","gender":"Male","age":38,"qualification":"Undergraduate","org_exp":"10 \u2013 15 years","overall_exp":"10 \u2013 15 years","performance":"Exceeding","perf_score":3,"sect1_pct":52.0,"sect2_pct":80.0,"grand_total":66.0,"mcq_score":6,"tf_score":5,"rm":4.0,"ce":4.0,"cf":4.0,"sod":4.0},{"id":"Candidate 16","race":"White","gender":"Male","age":27,"qualification":"Postgraduate","org_exp":"Less than 2 years","overall_exp":"2 \u2013 5 years","performance":"Performing","perf_score":2,"sect1_pct":52.0,"sect2_pct":60.0,"grand_total":56.0,"mcq_score":7,"tf_score":4,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 17","race":"White","gender":"Male","age":43,"qualification":"Non-degree","org_exp":"15 \u2013 20 years","overall_exp":"more than 20 years","performance":"Off standard","perf_score":1,"sect1_pct":57.0,"sect2_pct":60.0,"grand_total":59.0,"mcq_score":6,"tf_score":6,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 18","race":"Asian","gender":"Male","age":47,"qualification":"Non-degree","org_exp":"more than 20 years","overall_exp":"10 \u2013 15 years","performance":"Off standard","perf_score":1,"sect1_pct":48.0,"sect2_pct":60.0,"grand_total":54.0,"mcq_score":5,"tf_score":5,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 19","race":"White","gender":"Male","age":39,"qualification":"Non-degree","org_exp":"15 \u2013 20 years","overall_exp":"more than 20 years","performance":"Exceeding","perf_score":3,"sect1_pct":76.0,"sect2_pct":70.0,"grand_total":73.0,"mcq_score":11,"tf_score":5,"rm":3.0,"ce":4.0,"cf":4.0,"sod":3.0},{"id":"Candidate 20","race":"Asian","gender":"Female","age":43,"qualification":"Non-degree","org_exp":"more than 20 years","overall_exp":"more than 20 years","performance":"Performing","perf_score":2,"sect1_pct":48.0,"sect2_pct":60.0,"grand_total":54.0,"mcq_score":5,"tf_score":5,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 21","race":"Mixed Race","gender":"Female","age":50,"qualification":"Undergraduate","org_exp":"more than 20 years","overall_exp":"more than 20 years","performance":"Off standard","perf_score":1,"sect1_pct":48.0,"sect2_pct":55.0,"grand_total":51.0,"mcq_score":5,"tf_score":5,"rm":3.0,"ce":2.0,"cf":3.0,"sod":3.0},{"id":"Candidate 22","race":"Asian","gender":"Male","age":44,"qualification":"Non-degree","org_exp":"15 \u2013 20 years","overall_exp":"more than 20 years","performance":"Performing","perf_score":2,"sect1_pct":67.0,"sect2_pct":50.0,"grand_total":58.0,"mcq_score":8,"tf_score":6,"rm":2.0,"ce":3.0,"cf":2.0,"sod":3.0},{"id":"Candidate 23","race":"Mixed Race","gender":"Female","age":51,"qualification":"Undergraduate","org_exp":"more than 20 years","overall_exp":"more than 20 years","performance":"Off standard","perf_score":1,"sect1_pct":33.0,"sect2_pct":60.0,"grand_total":47.0,"mcq_score":3,"tf_score":4,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 24","race":"African American","gender":"Male","age":30,"qualification":"Undergraduate","org_exp":"2 \u2013 5 years","overall_exp":"2 \u2013 5 years","performance":"Performing","perf_score":2,"sect1_pct":43.0,"sect2_pct":60.0,"grand_total":51.0,"mcq_score":5,"tf_score":4,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 25","race":"African American","gender":"Male","age":47,"qualification":"Non-degree","org_exp":"15 \u2013 20 years","overall_exp":"15 \u2013 20 years","performance":"Performing","perf_score":2,"sect1_pct":43.0,"sect2_pct":75.0,"grand_total":59.0,"mcq_score":4,"tf_score":5,"rm":4.0,"ce":4.0,"cf":4.0,"sod":3.0},{"id":"Candidate 26","race":"Asian","gender":"Female","age":36,"qualification":"Undergraduate","org_exp":"15 \u2013 20 years","overall_exp":"15 \u2013 20 years","performance":"Off standard","perf_score":1,"sect1_pct":null,"sect2_pct":60.0,"grand_total":null,"mcq_score":null,"tf_score":5,"rm":3.0,"ce":3.0,"cf":3.0,"sod":3.0},{"id":"Candidate 27","race":"African American","gender":"Male","age":40,"qualification":"Undergraduate","org_exp":"6 \u2013 10 years","overall_exp":"10 \u2013 15 years","performance":"Performing","perf_score":2,"sect1_pct":62.0,"sect2_pct":65.0,"grand_total":63.0,"mcq_score":8,"tf_score":5,"rm":3.0,"ce":4.0,"cf":3.0,"sod":3.0}];
+
+const PERF_COLORS = {
+  'Exceeding':     '#2EB8A8',
+  'Performing':    '#2E75B6',
+  'Off standard':  '#E06040',
+  'Not available': '#BCC8D8',
+  'Unrated':       '#8898A8'
+};
+const RACE_COLORS = { 'White':'#2E75B6','Asian':'#2EB8A8','African American':'#E8A838','Mixed Race':'#E06040' };
+const GENDER_COLORS = { 'Male':'#2E75B6','Female':'#E06040' };
+const QUAL_COLORS = { 'Postgraduate':'#2E75B6','Undergraduate':'#2EB8A8','Non-degree':'#E8A838' };
+const COMP_COLORS = { rm:'#2E75B6', ce:'#2EB8A8', cf:'#6FAD7A', sod:'#E8A838' };
+
+let charts = {};
+let sortCol = 'id', sortDir = 1;
+
+// ── FILTERING ──────────────────────────────────────────────────────────────
+function getFilters() {
+  return {
+    perf: document.getElementById('f-perf').value,
+    gender: document.getElementById('f-gender').value,
+    race: document.getElementById('f-race').value,
+    qual: document.getElementById('f-qual').value,
+    exp: document.getElementById('f-exp').value,
+  };
+}
+function applyFilters(data, f) {
+  return data.filter(d =>
+    (!f.perf || d.performance === f.perf) &&
+    (!f.gender || d.gender === f.gender) &&
+    (!f.race || d.race === f.race) &&
+    (!f.qual || d.qualification === f.qual) &&
+    (!f.exp || d.org_exp === f.exp)
+  );
+}
+
+// ── UTILS ──────────────────────────────────────────────────────────────────
+function mean(arr) {
+  const v = arr.filter(x => x != null && !isNaN(x));
+  return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null;
+}
+function sd(arr) {
+  const m = mean(arr);
+  if (m === null) return 0;
+  const v = arr.filter(x => x != null && !isNaN(x));
+  return Math.sqrt(v.reduce((s,x)=>s+(x-m)**2, 0)/v.length);
+}
+function groupBy(arr, key) {
+  const g = {};
+  arr.forEach(d => {
+    const k = d[key] || 'Unknown';
+    if (!g[k]) g[k] = [];
+    g[k].push(d);
+  });
+  return g;
+}
+function fmt(v, dp=1) {
+  return v != null && !isNaN(v) ? v.toFixed(dp) : '—';
+}
+
+// ── CHART DESTROY/CREATE ───────────────────────────────────────────────────
+function makeChart(id, config) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id).getContext('2d');
+  charts[id] = new Chart(ctx, config);
+  return charts[id];
+}
+
+// ── RENDER ALL ─────────────────────────────────────────────────────────────
+function renderAll() {
+  const f = getFilters();
+  const data = applyFilters(RAW, f);
+
+  document.getElementById('nCount').textContent = data.length;
+
+  renderKPIs(data);
+  renderPerfDist(data);
+  renderGrandHist(data);
+  renderSections(data);
+  renderDemoBars('chartRace', data, 'race', RACE_COLORS);
+  renderDemoBars('chartGender', data, 'gender', GENDER_COLORS);
+  renderDemoBars('chartQual', data, 'qualification', QUAL_COLORS);
+  renderExpBars(data);
+  renderCompPerf(data);
+  renderCompDist(data);
+  renderRadar(data);
+  renderScatter(data);
+  renderMeanPerf(data);
+  renderEquityRace(data);
+  renderEquityGender(data);
+  renderTable(data);
+}
+
+// ── KPIs ───────────────────────────────────────────────────────────────────
+function renderKPIs(data) {
+  const m = (key, dp=1) => {
+    const v = mean(data.map(d=>d[key]));
+    return v != null ? v.toFixed(dp)+'%' : '—';
+  };
+  const mc = (key) => {
+    const v = mean(data.map(d=>d[key]));
+    return v != null ? v.toFixed(2) : '—';
+  };
+  document.getElementById('kpi-grand').textContent = m('grand_total');
+  document.getElementById('kpi-s1').textContent = m('sect1_pct');
+  document.getElementById('kpi-s2').textContent = m('sect2_pct');
+  document.getElementById('kpi-rm').textContent = mc('rm');
+  document.getElementById('kpi-ce').textContent = mc('ce');
+  document.getElementById('kpi-sod').textContent = mc('sod');
+}
+
+// ── PERFORMANCE DOUGHNUT ───────────────────────────────────────────────────
+function renderPerfDist(data) {
+  const labels = ['Exceeding','Performing','Off standard','Not available','Unrated'];
+  const counts = labels.map(l => data.filter(d=>d.performance===l).length);
+  makeChart('chartPerf', {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: counts, backgroundColor: labels.map(l=>PERF_COLORS[l]), borderWidth: 2, borderColor: '#fff', hoverOffset: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 10, padding: 8 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}` } }
+      }
+    }
+  });
+}
+
+// ── GRAND TOTAL HISTOGRAM ──────────────────────────────────────────────────
+function renderGrandHist(data) {
+  const vals = data.map(d=>d.grand_total).filter(v=>v!=null);
+  const bins = [[40,50],[50,55],[55,60],[60,65],[65,70],[70,75],[75,100]];
+  const labels = bins.map(b=>`${b[0]}–${b[1]}%`);
+  const counts = bins.map(b => vals.filter(v=>v>=b[0]&&v<b[1]).length);
+  const bgColors = counts.map((_,i) => `hsla(${200+i*15},60%,52%,0.8)`);
+
+  makeChart('chartGrandHist', {
+    type:'bar',
+    data:{ labels, datasets:[{ data:counts, backgroundColor:bgColors, borderRadius:5, borderSkipped:false }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>` ${ctx.parsed.y} candidates` }}},
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ size:9 }}},
+        y:{ grid:{ color:'#EDF0F5' }, ticks:{ stepSize:1, font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── SECTION SCORE GROUPED BAR ─────────────────────────────────────────────
+function renderSections(data) {
+  const groups = ['Exceeding','Performing','Off standard'];
+  const s1 = groups.map(g => mean(data.filter(d=>d.performance===g).map(d=>d.sect1_pct)));
+  const s2 = groups.map(g => mean(data.filter(d=>d.performance===g).map(d=>d.sect2_pct)));
+  makeChart('chartSections', {
+    type:'bar',
+    data:{
+      labels: groups,
+      datasets:[
+        { label:'Section 1 %', data:s1, backgroundColor:'#2E75B6', borderRadius:4, borderSkipped:false },
+        { label:'Section 2 %', data:s2, backgroundColor:'#2EB8A8', borderRadius:4, borderSkipped:false }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ font:{ size:10 }, boxWidth:10 }}},
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ size:10 }}},
+        y:{ grid:{ color:'#EDF0F5' }, min:0, max:100, ticks:{ callback:v=>v+'%', font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── DEMOGRAPHIC BARS (count) ───────────────────────────────────────────────
+function renderDemoBars(chartId, data, key, colors) {
+  const g = groupBy(data, key);
+  const labels = Object.keys(g).sort();
+  const counts = labels.map(l=>g[l].length);
+  const bgColors = labels.map(l => colors[l] || '#8898A8');
+
+  makeChart(chartId, {
+    type:'bar',
+    data:{ labels, datasets:[{ data:counts, backgroundColor:bgColors, borderRadius:5, borderSkipped:false }]},
+    options:{
+      indexAxis:'y',
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>` ${ctx.parsed.x} candidates`}}},
+      scales:{
+        x:{ grid:{ color:'#EDF0F5' }, ticks:{ stepSize:1, font:{ size:9 }}},
+        y:{ grid:{ display:false }, ticks:{ font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── EXPERIENCE BARS ───────────────────────────────────────────────────────
+function renderExpBars(data) {
+  const order = ['No working experience','Less than 2 years','2 \u2013 5 years','6 \u2013 10 years','10 \u2013 15 years','15 \u2013 20 years','more than 20 years'];
+  const labels = ['None','<2yr','2–5yr','6–10yr','10–15yr','15–20yr','>20yr'];
+  const counts = order.map(o => data.filter(d=>d.org_exp===o).length);
+  const bgColors = counts.map((_,i)=>`hsla(${220+i*8},55%,${55-i*3}%,0.85)`);
+  makeChart('chartExp', {
+    type:'bar',
+    data:{ labels, datasets:[{ data:counts, backgroundColor:bgColors, borderRadius:4, borderSkipped:false }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false }},
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ size:9 }}},
+        y:{ grid:{ color:'#EDF0F5' }, ticks:{ stepSize:1, font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── COMPETENCY BY PERFORMANCE GROUP ──────────────────────────────────────
+function renderCompPerf(data) {
+  const groups = ['Exceeding','Performing','Off standard'];
+  const comps = ['rm','ce','cf','sod'];
+  const labels = ['RM','CE','CF','SOD'];
+  const datasets = groups.map(g => ({
+    label: g,
+    data: comps.map(c => mean(data.filter(d=>d.performance===g).map(d=>d[c]))),
+    backgroundColor: PERF_COLORS[g]+'BB',
+    borderColor: PERF_COLORS[g],
+    borderWidth:1.5,
+    borderRadius:4,
+    borderSkipped:false
+  }));
+  makeChart('chartCompPerf', {
+    type:'bar',
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ font:{ size:10 }, boxWidth:10 }}},
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ size:10 }}},
+        y:{ grid:{ color:'#EDF0F5' }, min:0, max:5, ticks:{ stepSize:1, font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── COMPETENCY DISTRIBUTION (floating bar min/max + mean dot) ────────────
+function renderCompDist(data) {
+  const comps = [{k:'rm',l:'RM'},{k:'ce',l:'CE'},{k:'cf',l:'CF'},{k:'sod',l:'SOD'}];
+  const labels = comps.map(c=>c.l);
+  const means = comps.map(c => mean(data.map(d=>d[c.k])));
+  const mins = comps.map(c => Math.min(...data.map(d=>d[c.k]).filter(v=>v!=null)));
+  const maxs = comps.map(c => Math.max(...data.map(d=>d[c.k]).filter(v=>v!=null)));
+  const ranges = means.map((m,i) => m != null ? [mins[i], maxs[i]] : [0,0]);
+  makeChart('chartCompDist', {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        { label:'Min–Max Range', data:ranges, backgroundColor: comps.map(c=>COMP_COLORS[c.k]+'55'), borderColor:comps.map(c=>COMP_COLORS[c.k]), borderWidth:1.5, borderRadius:4, borderSkipped:false },
+        { label:'Mean', data:means, type:'line', borderColor:'#1A2940', backgroundColor:'#1A2940', pointRadius:6, pointHoverRadius:8, fill:false, borderWidth:2, tension:0 }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ font:{ size:10 }, boxWidth:10 }}, tooltip:{ callbacks:{ label:ctx=> ctx.datasetIndex===0 ? ` Range: ${ctx.parsed._custom?.start ?? ctx.parsed.y[0]}–${ctx.parsed._custom?.end ?? ctx.parsed.y[1]}` : ` Mean: ${ctx.parsed.y?.toFixed(2)}`}}},
+      scales:{
+        x:{ grid:{ display:false }},
+        y:{ grid:{ color:'#EDF0F5' }, min:0, max:5.5, ticks:{ stepSize:1, font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── RADAR ─────────────────────────────────────────────────────────────────
+function renderRadar(data) {
+  const groups = ['Exceeding','Performing','Off standard'];
+  const comps = ['rm','ce','cf','sod'];
+  const labels = ['Relationship\nMgmt (RM)','Communication\nEff (CE)','Client\nFocus (CF)','Strategic Opp\nDev (SOD)'];
+  const datasets = groups.map(g => ({
+    label: g,
+    data: comps.map(c => mean(data.filter(d=>d.performance===g).map(d=>d[c])) ?? 0),
+    backgroundColor: PERF_COLORS[g]+'30',
+    borderColor: PERF_COLORS[g],
+    borderWidth: 2,
+    pointBackgroundColor: PERF_COLORS[g],
+    pointRadius: 4,
+  }));
+  makeChart('chartRadar', {
+    type:'radar',
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ font:{ size:9 }, boxWidth:10 }}},
+      scales:{ r:{ min:0, max:5, ticks:{ stepSize:1, font:{ size:8 }, backdropColor:'transparent' }, grid:{ color:'#DDE4EE' }, angleLines:{ color:'#DDE4EE' }, pointLabels:{ font:{ size:8 }}}},
+    }
+  });
+}
+
+// ── SCATTER ───────────────────────────────────────────────────────────────
+function renderScatter(data) {
+  const xKey = document.getElementById('scatterX').value;
+  const colorKey = document.getElementById('scatterColor').value;
+  const colorMap = colorKey==='performance' ? PERF_COLORS : colorKey==='race' ? RACE_COLORS : colorKey==='gender' ? GENDER_COLORS : QUAL_COLORS;
+  const groupKeys = [...new Set(data.map(d=>d[colorKey]))].filter(Boolean).sort();
+
+  const datasets = groupKeys.map(gk => ({
+    label: gk,
+    data: data.filter(d=>d[colorKey]===gk && d[xKey]!=null && d.perf_score!=null)
+              .map(d=>({ x: d[xKey], y: d.perf_score, id: d.id })),
+    backgroundColor: (colorMap[gk]||'#8898A8')+'CC',
+    borderColor: colorMap[gk]||'#8898A8',
+    pointRadius: 7,
+    pointHoverRadius: 9,
+  }));
+
+  const xLabel = document.getElementById('scatterX').options[document.getElementById('scatterX').selectedIndex].text;
+  makeChart('chartScatter', {
+    type:'scatter',
+    data:{ datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ labels:{ font:{ size:10 }, boxWidth:10 }},
+        tooltip:{ callbacks:{ label:ctx => ` ${ctx.raw.id}: x=${ctx.parsed.x}, perf=${ctx.parsed.y}` }}
+      },
+      scales:{
+        x:{ title:{ display:true, text: xLabel, font:{ size:10 }}, grid:{ color:'#EDF0F5' }, ticks:{ font:{ size:9 }}},
+        y:{ title:{ display:true, text:'Performance Score (1–3)', font:{ size:10 }}, grid:{ color:'#EDF0F5' }, min:0.5, max:3.5, ticks:{ stepSize:1, callback:v=>({1:'Off std',2:'Performing',3:'Exceeding'}[v]||''), font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── MEAN SCORE BY PERF GROUP ──────────────────────────────────────────────
+function renderMeanPerf(data) {
+  const groups = ['Exceeding','Performing','Off standard'];
+  const metrics = ['sect1_pct','sect2_pct','grand_total'];
+  const mLabels = ['Section 1 %','Section 2 %','Grand Total %'];
+  const datasets = groups.map(g => ({
+    label: g,
+    data: metrics.map(m => mean(data.filter(d=>d.performance===g).map(d=>d[m]))),
+    backgroundColor: PERF_COLORS[g]+'CC',
+    borderColor: PERF_COLORS[g],
+    borderWidth:1.5,
+    borderRadius:6,
+    borderSkipped:false,
+  }));
+  makeChart('chartMeanPerf', {
+    type:'bar',
+    data:{ labels:mLabels, datasets },
+    options:{
+      indexAxis:'y',
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ font:{ size:10 }, boxWidth:10 }}},
+      scales:{
+        x:{ grid:{ color:'#EDF0F5' }, min:0, max:100, ticks:{ callback:v=>v+'%', font:{ size:9 }}},
+        y:{ grid:{ display:false }, ticks:{ font:{ size:10 }}}
+      }
+    }
+  });
+}
+
+// ── EQUITY: RACE ──────────────────────────────────────────────────────────
+function renderEquityRace(data) {
+  const races = ['White','Asian','African American','Mixed Race'];
+  const means_ = races.map(r => mean(data.filter(d=>d.race===r).map(d=>d.grand_total)));
+  const sds_ = races.map(r => sd(data.filter(d=>d.race===r).map(d=>d.grand_total)));
+  const ns = races.map(r => data.filter(d=>d.race===r&&d.grand_total!=null).length);
+
+  makeChart('chartEquityRace', {
+    type:'bar',
+    data:{
+      labels: races,
+      datasets:[{
+        label:'Mean Grand Total %',
+        data: means_,
+        backgroundColor: races.map(r=>RACE_COLORS[r]+'BB'),
+        borderColor: races.map(r=>RACE_COLORS[r]),
+        borderWidth: 1.5,
+        borderRadius: 6,
+        borderSkipped: false,
+        errorBars: sds_.map((s,i) => ns[i]>=3 ? {plus:s,minus:s} : null),
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ display:false },
+        tooltip:{ callbacks:{ label:ctx => ` Mean: ${ctx.parsed.y?.toFixed(1)}%  SD: ±${sds_[ctx.dataIndex]?.toFixed(1)}  n=${ns[ctx.dataIndex]}` }}
+      },
+      scales:{
+        x:{ grid:{ display:false }},
+        y:{ grid:{ color:'#EDF0F5' }, min:0, max:100, ticks:{ callback:v=>v+'%', font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── EQUITY: GENDER ────────────────────────────────────────────────────────
+function renderEquityGender(data) {
+  const genders = ['Male','Female'];
+  const metrics = ['sect1_pct','sect2_pct','grand_total'];
+  const mLabels = ['Section 1 %','Section 2 %','Grand Total %'];
+  const datasets = genders.map(g => ({
+    label: g,
+    data: metrics.map(m => mean(data.filter(d=>d.gender===g).map(d=>d[m]))),
+    backgroundColor: GENDER_COLORS[g]+'BB',
+    borderColor: GENDER_COLORS[g],
+    borderWidth:1.5,
+    borderRadius:5,
+    borderSkipped:false
+  }));
+  makeChart('chartEquityGender', {
+    type:'bar',
+    data:{ labels:mLabels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ font:{ size:10 }, boxWidth:10 }}},
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ size:10 }}},
+        y:{ grid:{ color:'#EDF0F5' }, min:0, max:100, ticks:{ callback:v=>v+'%', font:{ size:9 }}}
+      }
+    }
+  });
+}
+
+// ── TABLE ─────────────────────────────────────────────────────────────────
+function perfBadge(p) {
+  const c = { 'Exceeding':'#2EB8A8','Performing':'#2E75B6','Off standard':'#E06040','Not available':'#BCC8D8','Unrated':'#8898A8' };
+  const col = c[p]||'#BCC8D8';
+  return `<span style="background:${col}20;color:${col};padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;white-space:nowrap">${p}</span>`;
+}
+function scoreBar(v, max, color) {
+  if (v==null) return '—';
+  const pct = (v/max)*100;
+  return `<div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill" style="width:${pct}%;background:${color}"></div></div><span class="score-num">${v}</span></div>`;
+}
+function renderTable(data) {
+  const sorted = [...data].sort((a,b) => {
+    const av = a[sortCol], bv = b[sortCol];
+    if (av==null && bv==null) return 0;
+    if (av==null) return 1;
+    if (bv==null) return -1;
+    return (av > bv ? 1 : av < bv ? -1 : 0) * sortDir;
+  });
+  const body = document.getElementById('tableBody');
+  body.innerHTML = sorted.map(d => `
+    <tr>
+      <td style="font-weight:500;font-size:11px;color:#1A3560">${d.id}</td>
+      <td>${perfBadge(d.performance)}</td>
+      <td><span style="font-size:11px;color:${RACE_COLORS[d.race]||'#666'};font-weight:500">${d.race}</span></td>
+      <td style="font-size:11px">${d.gender}</td>
+      <td style="font-size:11px">${d.qualification}</td>
+      <td>${d.sect1_pct!=null ? scoreBar(d.sect1_pct,100,'#2E75B6') : '—'}</td>
+      <td>${d.sect2_pct!=null ? scoreBar(d.sect2_pct,100,'#2EB8A8') : '—'}</td>
+      <td>${d.grand_total!=null ? scoreBar(d.grand_total,100,'#6FAD7A') : '—'}</td>
+      <td>${scoreBar(d.rm,5,'#2E75B6')}</td>
+      <td>${scoreBar(d.ce,5,'#2EB8A8')}</td>
+      <td>${scoreBar(d.cf,5,'#6FAD7A')}</td>
+      <td>${scoreBar(d.sod,5,'#E8A838')}</td>
+    </tr>
+  `).join('');
+}
+
+// ── SORT ──────────────────────────────────────────────────────────────────
+document.querySelectorAll('thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll('thead th').forEach(h => h.classList.remove('sorted'));
+    th.classList.add('sorted');
+    renderTable(applyFilters(RAW, getFilters()));
+  });
+});
+
+// ── FILTER LISTENERS ──────────────────────────────────────────────────────
+['f-perf','f-gender','f-race','f-qual','f-exp'].forEach(id => {
+  document.getElementById(id).addEventListener('change', renderAll);
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  ['f-perf','f-gender','f-race','f-qual','f-exp'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  renderAll();
+});
+['scatterX','scatterColor'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    renderScatter(applyFilters(RAW, getFilters()));
+  });
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+renderAll();
+</script>
+</body>
+</html>
