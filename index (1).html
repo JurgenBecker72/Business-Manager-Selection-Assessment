@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Manager Selection Assessment — Jurgen Becker PhD</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a12;
+    --surface: #11111f;
+    --surface2: #181828;
+    --border: rgba(138, 99, 210, 0.2);
+    --accent: #7c4dff;
+    --accent2: #b388ff;
+    --accent3: #4fc3f7;
+    --text: #e8e4f0;
+    --muted: #7a7490;
+    --gold: #c9a84c;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%;
+    left: -20%;
+    width: 80vw;
+    height: 80vw;
+    background: radial-gradient(ellipse, rgba(124,77,255,0.07) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(ellipse, rgba(79,195,247,0.05) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 72px 48px 56px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .org-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    opacity: 0;
+    animation: fadeUp 0.6s 0.1s ease forwards;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  .subtitle {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 560px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s ease forwards;
+  }
+
+  .meta-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.25s ease forwards;
+  }
+
+  .meta-item {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .meta-item span {
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.3s ease forwards;
+  }
+
+  .badge {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .badge-purple { background: rgba(124,77,255,0.15); color: var(--accent2); border: 1px solid rgba(124,77,255,0.3); }
+  .badge-blue   { background: rgba(79,195,247,0.1);  color: var(--accent3); border: 1px solid rgba(79,195,247,0.25); }
+  .badge-gold   { background: rgba(201,168,76,0.1);  color: var(--gold);    border: 1px solid rgba(201,168,76,0.25); }
+  .badge-green  { background: rgba(102,187,106,0.1); color: #81c784;        border: 1px solid rgba(102,187,106,0.25); }
+
+  /* ── OVERVIEW IMAGE ── */
+  .overview-section {
+    position: relative;
+    z-index: 10;
+    max-width: 1200px;
+    margin: 56px auto 0;
+    padding: 0 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.4s ease forwards;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .overview-img {
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  /* ── FILES GRID ── */
+  .files-section {
+    position: relative;
+    z-index: 10;
+    max-width: 1200px;
+    margin: 64px auto 0;
+    padding: 0 48px 80px;
+  }
+
+  .files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .file-card {
+    background: var(--surface);
+    padding: 28px 32px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    transition: background 0.2s ease;
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .file-card:hover {
+    background: var(--surface2);
+  }
+
+  .file-card:hover .file-arrow { opacity: 1; transform: translateX(0); }
+
+  .file-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .icon-html { background: rgba(124,77,255,0.15); color: var(--accent2); border: 1px solid rgba(124,77,255,0.3); }
+  .icon-pdf  { background: rgba(239,83,80,0.12);  color: #ef9a9a;        border: 1px solid rgba(239,83,80,0.25); }
+  .icon-svg  { background: rgba(79,195,247,0.12); color: var(--accent3); border: 1px solid rgba(79,195,247,0.25); }
+  .icon-xlsx { background: rgba(102,187,106,0.12);color: #81c784;        border: 1px solid rgba(102,187,106,0.25); }
+  .icon-docx { background: rgba(41,182,246,0.12); color: #81d4fa;        border: 1px solid rgba(41,182,246,0.25); }
+  .icon-py   { background: rgba(255,202,40,0.1);  color: #ffd54f;        border: 1px solid rgba(255,202,40,0.2); }
+  .icon-r    { background: rgba(41,182,246,0.1);  color: #4fc3f7;        border: 1px solid rgba(41,182,246,0.2); }
+  .icon-md   { background: rgba(201,168,76,0.1);  color: var(--gold);    border: 1px solid rgba(201,168,76,0.2); }
+
+  .file-info { flex: 1; min-width: 0; }
+
+  .file-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .file-arrow {
+    font-size: 16px;
+    color: var(--accent2);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease;
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 10;
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  footer a { color: var(--accent2); text-decoration: none; }
+  footer a:hover { color: var(--accent3); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stagger file cards */
+  .file-card:nth-child(1)  { animation-delay: 0.45s; }
+  .file-card:nth-child(2)  { animation-delay: 0.5s; }
+  .file-card:nth-child(3)  { animation-delay: 0.55s; }
+  .file-card:nth-child(4)  { animation-delay: 0.6s; }
+  .file-card:nth-child(5)  { animation-delay: 0.65s; }
+  .file-card:nth-child(6)  { animation-delay: 0.7s; }
+  .file-card:nth-child(7)  { animation-delay: 0.75s; }
+  .file-card:nth-child(8)  { animation-delay: 0.8s; }
+
+  @media (max-width: 700px) {
+    header { grid-template-columns: 1fr; padding: 40px 24px 32px; }
+    .meta-stack { align-items: flex-start; }
+    .overview-section, .files-section { padding: 0 24px 48px; }
+    footer { flex-direction: column; gap: 8px; text-align: center; padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="org-label">AX Consult Group · Research Repository</div>
+    <h1>Business Manager<br><em>Selection Assessment</em></h1>
+    <p class="subtitle">Psychometric Validation Study · Phase 1 Pilot — validating a revised Business Manager Selection Assessment measuring technical knowledge and four behavioural competencies for a major financial services institution.</p>
+    <div class="badge-row">
+      <span class="badge badge-purple">Phase 1 Complete</span>
+      <span class="badge badge-blue">n = 27 Candidates</span>
+      <span class="badge badge-gold">Financial Services</span>
+      <span class="badge badge-green">IRT · CTT · Simulation</span>
+    </div>
+  </div>
+  <div class="meta-stack">
+    <div class="meta-item">Author <span>Jurgen Becker PhD</span></div>
+    <div class="meta-item">Org <span>AX Consult Group</span></div>
+    <div class="meta-item">Sector <span>Financial Services</span></div>
+  </div>
+</header>
+
+<div class="overview-section">
+  <div class="section-label">Methodology Overview</div>
+  <img class="overview-img" src="BM_Methodology_Overview.svg" alt="BM Assessment Methodology Overview" onerror="this.style.display='none'">
+</div>
+
+<div class="files-section">
+  <div class="section-label" style="margin-top:48px;">Project Files</div>
+  <div class="files-grid">
+
+    <a class="file-card" href="BM_Assessment_Dashboard.html">
+      <div class="file-icon icon-html">HTM</div>
+      <div class="file-info">
+        <div class="file-name">Assessment Dashboard</div>
+        <div class="file-desc">Interactive HTML dashboard — key metrics, scoring summaries, and visual outputs</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Assessment_Full_Analysis.html">
+      <div class="file-icon icon-html">HTM</div>
+      <div class="file-info">
+        <div class="file-name">Full Analysis Report</div>
+        <div class="file-desc">Complete statistical analysis — descriptive stats, IRT modelling, validity & prediction</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Assessment_Full_Analysis.pdf">
+      <div class="file-icon icon-pdf">PDF</div>
+      <div class="file-info">
+        <div class="file-name">Full Analysis (PDF)</div>
+        <div class="file-desc">Downloadable PDF version of the complete analysis report</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Case_Study_Technical_Manual_Anonymized_Final.docx">
+      <div class="file-icon icon-docx">DOC</div>
+      <div class="file-info">
+        <div class="file-name">Technical Manual</div>
+        <div class="file-desc">Anonymised case study technical manual — full methodology and instrument documentation</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Methodology_Overview.svg">
+      <div class="file-icon icon-svg">SVG</div>
+      <div class="file-info">
+        <div class="file-name">Methodology Overview</div>
+        <div class="file-desc">Design & methodology diagram — analysis flow, conceptualisation to validation</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Project_Flow.svg">
+      <div class="file-icon icon-svg">SVG</div>
+      <div class="file-info">
+        <div class="file-name">Project Flow Diagram</div>
+        <div class="file-desc">End-to-end project flow from SME workshops through piloting and validation</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Analysis_Pipeline_Python.md">
+      <div class="file-icon icon-md">MD</div>
+      <div class="file-info">
+        <div class="file-name">Python Pipeline (Notebook)</div>
+        <div class="file-desc">Documented Python analysis pipeline — data cleaning, IRT modelling, simulation</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Analysis_Pipeline_R.md">
+      <div class="file-icon icon-md">MD</div>
+      <div class="file-info">
+        <div class="file-name">R Pipeline (Notebook)</div>
+        <div class="file-desc">Documented R analysis pipeline — CTT, IRT, equity analysis and reporting</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Analysis_Pipeline.py">
+      <div class="file-icon icon-py">PY</div>
+      <div class="file-info">
+        <div class="file-name">Python Script</div>
+        <div class="file-desc">Full Python analysis pipeline source file</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="BM_Analysis_Pipeline.R">
+      <div class="file-icon icon-r">R</div>
+      <div class="file-info">
+        <div class="file-name">R Script</div>
+        <div class="file-desc">Full R analysis pipeline source file — SPSS-compatible outputs</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="Dataset_Clean_Anonymized.xlsx">
+      <div class="file-icon icon-xlsx">XLS</div>
+      <div class="file-info">
+        <div class="file-name">Clean Dataset (Anonymised)</div>
+        <div class="file-desc">Pilot dataset — n=27 usable records, anonymised for sharing</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a class="file-card" href="README.md">
+      <div class="file-icon icon-md">MD</div>
+      <div class="file-info">
+        <div class="file-name">README</div>
+        <div class="file-desc">Project overview, objectives, and repository structure</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  <span>Jurgen Becker PhD · AX Consult Group · Psychometric Validation Study</span>
+  <a href="https://github.com/JurgenBecker72/Business-Manager-Selection-Assessment">View on GitHub →</a>
+</footer>
+
+</body>
+</html>
