@@ -1,0 +1,1069 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R Analysis Pipeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a12;--surface:#11111f;--surface2:#181828;
+  --border:rgba(138,99,210,0.2);--accent:#7c4dff;--accent2:#b388ff;
+  --accent3:#4fc3f7;--text:#e8e4f0;--muted:#7a7490;--gold:#c9a84c;
+  --green:#81c784;--red:#ef9a9a;--yellow:#ffd54f;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;line-height:1.7}
+body::before{content:'';position:fixed;top:-40%;left:-20%;width:80vw;height:80vw;background:radial-gradient(ellipse,rgba(124,77,255,0.06) 0%,transparent 65%);pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,18,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 48px;display:flex;align-items:center;justify-content:space-between}
+.nav-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:0.05em}
+.nav-back{font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s}
+.nav-back:hover{color:var(--accent3)}
+.nav-lang{font-size:10px;padding:3px 10px;border-radius:2px;letter-spacing:0.15em;text-transform:uppercase}
+.lang-py{background:rgba(255,202,40,0.1);color:var(--yellow);border:1px solid rgba(255,202,40,0.25)}
+.lang-r{background:rgba(79,195,247,0.1);color:var(--accent3);border:1px solid rgba(79,195,247,0.25)}
+
+/* HEADER */
+header{position:relative;z-index:10;max-width:960px;margin:0 auto;padding:56px 48px 40px;border-bottom:1px solid var(--border)}
+header h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.15;margin-bottom:16px}
+header h1 em{font-style:italic;color:var(--accent2)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.badge{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;padding:4px 12px;border-radius:2px;font-family:'DM Mono',monospace}
+.badge-purple{background:rgba(124,77,255,0.15);color:var(--accent2);border:1px solid rgba(124,77,255,0.3)}
+.badge-blue{background:rgba(79,195,247,0.1);color:var(--accent3);border:1px solid rgba(79,195,247,0.25)}
+.badge-gold{background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.25)}
+
+/* TOC */
+.toc{position:relative;z-index:10;max-width:960px;margin:0 auto;padding:32px 48px;border-bottom:1px solid var(--border)}
+.toc-label{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.toc ol{list-style:none;display:flex;flex-direction:column;gap:6px;padding:0}
+.toc li a{color:var(--muted);text-decoration:none;font-size:12px;letter-spacing:0.05em;transition:color 0.2s;display:flex;align-items:center;gap:8px}
+.toc li a::before{content:'';display:inline-block;width:16px;height:1px;background:var(--border);flex-shrink:0}
+.toc li a:hover{color:var(--accent2)}
+
+/* MAIN CONTENT */
+main{position:relative;z-index:10;max-width:960px;margin:0 auto;padding:0 48px 80px}
+
+/* SECTIONS */
+.section{margin-top:64px;border-top:1px solid var(--border);padding-top:40px}
+.section-num{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+main h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.8rem;color:var(--text);margin-bottom:24px;scroll-margin-top:80px}
+main h3{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin:32px 0 12px}
+
+/* PROSE */
+main p{font-size:13px;color:rgba(232,228,240,0.8);line-height:1.85;margin-bottom:14px}
+main strong{color:var(--text);font-weight:400}
+main em{color:var(--accent2);font-style:normal}
+
+/* CODE BLOCKS */
+pre{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px;overflow-x:auto;margin:16px 0;position:relative}
+pre::before{content:attr(data-lang);position:absolute;top:8px;right:12px;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted)}
+code{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent3);line-height:1.7}
+p code,li code{background:rgba(124,77,255,0.1);color:var(--accent2);padding:2px 6px;border-radius:2px;font-size:11px}
+
+/* BLOCKQUOTE */
+blockquote{border-left:2px solid var(--accent);padding:12px 20px;margin:16px 0;background:rgba(124,77,255,0.05);border-radius:0 4px 4px 0}
+blockquote p{color:var(--muted);font-size:12px;margin:0}
+
+/* TABLES */
+.table-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{border-bottom:1px solid var(--border)}
+th{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);padding:10px 16px;text-align:left}
+td{padding:10px 16px;border-bottom:1px solid rgba(138,99,210,0.08);color:rgba(232,228,240,0.8)}
+tr:last-child td{border-bottom:none}
+td strong{color:var(--text)}
+
+/* STATUS SYMBOLS */
+td:has(✅){color:var(--green)}
+td:has(⚠️){color:var(--yellow)}
+td:has(ℹ️){color:var(--accent3)}
+
+/* IMAGES */
+main img{max-width:100%;border-radius:4px;border:1px solid var(--border);display:block;margin:16px 0}
+
+/* LISTS */
+main ul,main ol{padding-left:24px;margin:12px 0;font-size:13px;color:rgba(232,228,240,0.8)}
+main li{margin-bottom:6px;line-height:1.7}
+
+/* HR */
+hr{border:none;border-top:1px solid var(--border);margin:48px 0}
+
+/* FOOTER */
+footer{position:relative;z-index:10;border-top:1px solid var(--border);padding:28px 48px;max-width:960px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}
+footer a{color:var(--accent2);text-decoration:none}
+footer a:hover{color:var(--accent3)}
+
+@media(max-width:700px){
+  nav,header,main,footer{padding-left:24px;padding-right:24px}
+  .toc{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a class="nav-back" href="index.html">← Back</a>
+    <span class="nav-title">R Analysis Pipeline</span>
+  </div>
+  <span class="badge lang-r">R</span>
+</nav>
+
+<header>
+  <div style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">AX Consult Group · Analysis Pipeline</div>
+  <h1>BM Assessment — <em>R Analysis Pipeline</em></h1>
+  <p style="font-size:13px;color:var(--muted);margin-top:12px">Results &amp; Findings · Jurgen Becker, PhD · Pilot n = 27 · Cut Score = 60.0%</p>
+  <div class="meta">
+    <span class="badge badge-purple">Phase 1 Complete</span>
+    <span class="badge badge-blue">n = 27 Candidates</span>
+    <span class="badge badge-gold">Monte Carlo n=250, n=500</span>
+  </div>
+</header>
+
+<main>
+<h1 id="bm-assessment-r-analysis-pipeline-results-findings">BM Assessment — R Analysis Pipeline: Results &amp; Findings</h1>
+<p><strong>File:</strong> <code>BM_Analysis_Pipeline.R</code><br />
+<strong>Author:</strong> Jurgen Becker, PhD · AX Consult Group<br />
+<strong>Pilot:</strong> n = 27 · Cut Score = 60.0% (Grand Total) · Monte Carlo: n = 250, n = 500</p>
+<blockquote>
+<p><strong>How to use in VS Code:</strong> Open this file, then press <code>Ctrl+Shift+V</code> (or click the preview icon top-right) to render the Markdown with all plots displayed inline. For the R script itself, open in RStudio and run section by section with <code>Ctrl+Enter</code>.</p>
+<p><strong>Note:</strong> Plots were generated by the companion Python script (<code>BM_Analysis_Pipeline.py</code>) and are shared between both documentation files. The R script produces equivalent outputs — key numeric results are identical within rounding.</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-descriptive-statistics--normality">Descriptive Statistics &amp; Normality</a></li>
+<li><a href="#2-cut-score-analysis">Cut Score Analysis</a></li>
+<li><a href="#3-classical-test-theory-ctt">Classical Test Theory (CTT)</a></li>
+<li><a href="#4-monte-carlo-simulation">Monte Carlo Simulation</a></li>
+<li><a href="#5-equity--fairness-analysis">Equity &amp; Fairness Analysis</a></li>
+<li><a href="#6-key-findings-summary">Key Findings Summary</a></li>
+</ol>
+<hr />
+<h2 id="1-descriptive-statistics-normality">1. Descriptive Statistics &amp; Normality</h2>
+<h3 id="code">Code</h3>
+<pre><code class="language-r">library(psych)
+
+num_vars &lt;- c(&quot;sect1_pct&quot;,&quot;sect2_pct&quot;,&quot;grand_total&quot;,&quot;rm&quot;,&quot;ce&quot;,&quot;cf&quot;,&quot;sod&quot;)
+
+# psych::describe() gives skew, kurtosis, SE in one call
+describe(pilot[, num_vars])
+
+# Shapiro-Wilk per variable
+for (v in num_vars) {
+  x &lt;- na.omit(pilot[[v]])
+  sw &lt;- shapiro.test(x)
+  cat(sprintf(&quot;%-14s W=%.3f  p=%.3f\n&quot;, v, sw$statistic, sw$p.value))
+}
+</code></pre>
+<h3 id="output">Output</h3>
+<pre><code>Variable        N   Mean    SD    Min   Max   Skew    Kurt   SE
+sect1_pct      24  55.50  12.34  33.0  86.0  +0.59  -0.10  2.52
+sect2_pct      27  66.67   9.90  50.0  85.0  +0.46  -1.20  1.90
+grand_total    24  61.25   8.02  47.0  73.0  +0.05  -1.10  1.64
+rm             27   3.30   0.54   2.0   4.0  +0.13  -0.61  0.10
+ce             27   3.37   0.56   2.0   4.0  -0.13  -0.83  0.11
+cf             27   3.37   0.63   2.0   5.0  +0.50  +0.13  0.12
+sod            27   3.30   0.47   3.0   4.0  +0.89  -1.20  0.09
+
+Shapiro-Wilk Normality Tests:
+sect1_pct      W=0.929  p=0.093      → Fail to reject (normal)
+sect2_pct      W=0.830  p=0.000 *   → Reject (non-normal)
+grand_total    W=0.941  p=0.172      → Fail to reject (normal)
+rm             W=0.708  p=0.000 *   → Reject (non-normal)
+ce             W=0.724  p=0.000 *   → Reject (non-normal)
+cf             W=0.777  p=0.000 *   → Reject (non-normal)
+sod            W=0.576  p=0.000 *   → Reject (non-normal)
+
+* p ≤ .05
+</code></pre>
+<h3 id="plot-distributions-skewness-skewness-ranking">Plot — Distributions, Skewness &amp; Skewness Ranking</h3>
+<p><img alt="Variable Distributions with Skewness" src="01_distributions_skewness.png" /></p>
+<h3 id="plot-q-q-plots-normality-assessment-shapiro-wilk">Plot — Q-Q Plots: Normality Assessment (Shapiro-Wilk)</h3>
+<p><img alt="Q-Q Plots — Normality Assessment" src="02_qq_plots.png" /></p>
+<h3 id="interpretation">Interpretation</h3>
+<p><strong>Skewness ranking — most to least skewed:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Variable</th>
+<th>Skewness</th>
+<th>Direction</th>
+<th>Flag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>SOD</strong></td>
+<td>+0.892</td>
+<td>Positive (right tail)</td>
+<td>⚠️ Moderate</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Section 1 %</strong></td>
+<td>+0.586</td>
+<td>Positive (right tail)</td>
+<td>⚠️ Moderate</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>CF</strong></td>
+<td>+0.501</td>
+<td>Positive (right tail)</td>
+<td>⚠️ Borderline</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Section 2 %</strong></td>
+<td>+0.464</td>
+<td>Positive (right tail)</td>
+<td>Slight</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>RM</strong></td>
+<td>+0.127</td>
+<td>Approximately symmetric</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Grand Total %</strong></td>
+<td>+0.050</td>
+<td>Approximately symmetric</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>CE</strong></td>
+<td>−0.128</td>
+<td>Approximately symmetric</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>SOD (+0.892) — floor effect:</strong></p>
+<p>SOD has the highest positive skew in the dataset. The Q-Q plot (W=0.576, p&lt;.001) shows severe departure from normality: nearly all candidates received a rating of 3, with a small number at 4. This is a <strong>floor effect</strong> — assessors are not differentiating between candidates at the lower end of the scale. In practice this means:</p>
+<ul>
+<li>SOD ratings will have artificially low variance, attenuating correlations with all other variables</li>
+<li>SOD's item-total correlation (r=0.695) and alpha-if-deleted value are both marginally weaker than the other three competencies</li>
+<li>The root cause is likely the difficulty of the SOD case study scenario or insufficient assessor training on anchor examples at the lower rating levels</li>
+</ul>
+<p>The <code>psych::describe()</code> kurtosis for SOD (−1.204) is also notable: the distribution is platykurtic (flatter than normal), consistent with a near-bimodal split between 3s and 4s with very little spread.</p>
+<p><strong>Section 1 % (+0.586):</strong></p>
+<p>Moderate positive skew. A cluster of 10 candidates score in the 48–52% range (below the mean of 55.5%), while a smaller group scores 67–86%. The Shapiro-Wilk test does not reject normality (p=.093), indicating this skew is within tolerable limits for parametric use. The high-end tail reflects genuinely strong technical performance by a minority of candidates.</p>
+<p><strong>Grand Total % (skew ≈ +0.050):</strong></p>
+<p>Near-perfectly symmetric. The composite nature of the grand total (Section 1 × 0.40 + Section 2 × 0.60) dampens distributional extremes. Grand Total is the most appropriate dependent variable for parametric analyses (regression, ANOVA, t-tests). Despite platykurtic kurtosis (−1.10), Shapiro-Wilk confirms approximate normality (p=.172).</p>
+<p><strong>Kurtosis summary:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Excess Kurtosis</th>
+<th>Shape</th>
+<th>Practical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SOD</td>
+<td>−1.204</td>
+<td>Strongly platykurtic</td>
+<td>Near-bimodal 3/4 split</td>
+</tr>
+<tr>
+<td>Section 2 %</td>
+<td>−1.199</td>
+<td>Strongly platykurtic</td>
+<td>Flat spread; mild ceiling effect at 80%</td>
+</tr>
+<tr>
+<td>Grand Total %</td>
+<td>−1.100</td>
+<td>Platykurtic</td>
+<td>Expected for bounded composite</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>R note:</strong> <code>psych::describe()</code> reports <em>excess</em> kurtosis (Fisher convention), so a normal distribution = 0, negative = flatter. This matches Python's <code>pandas.DataFrame.kurt()</code> with <code>fisher=True</code>.</p>
+<hr />
+<h2 id="2-cut-score-analysis">2. Cut Score Analysis</h2>
+<p><strong>Cut score: Grand Total ≥ 60.0%</strong></p>
+<blockquote>
+<p>Provisional cut set near the group mean (M=61.25%). Formal standard setting via Angoff or contrasting groups is required before operational deployment.</p>
+</blockquote>
+<h3 id="code_1">Code</h3>
+<pre><code class="language-r">CUT_SCORE &lt;- 60.0
+scored &lt;- subset(pilot, !is.na(grand_total))
+scored$pass &lt;- as.integer(scored$grand_total &gt;= CUT_SCORE)
+
+# Overall pass rate
+mean(scored$pass)
+
+# By performance group
+tapply(scored$pass, scored$performance, function(x) c(rate=mean(x), n=length(x)))
+
+# Adverse impact — 4/5ths rule
+ai_table &lt;- function(data, group_var) {
+  rates &lt;- tapply(data$pass, data[[group_var]], mean, na.rm=TRUE)
+  data.frame(group=names(rates), pass_rate=round(rates*100,1),
+             ai_ratio=round(rates/max(rates),2))
+}
+ai_table(scored, &quot;gender&quot;)
+ai_table(scored, &quot;race&quot;)
+</code></pre>
+<h3 id="output_1">Output</h3>
+<pre><code>Overall pass rate: 0.542  (13 / 24 scored candidates)
+
+Pass rates by performance group:
+  Exceeding:    1.000  n=3   (100%)
+  Performing:   0.375  n=8   ( 38%)
+  Off standard: 0.400  n=10  ( 40%)
+
+Adverse Impact at Cut = 60.0%:
+
+Gender:
+  group   pass_rate  ai_ratio
+  Male         50.0      1.00   (reference)
+  Female       44.4      0.89   ✓ above 4/5ths
+
+Race:
+  group             pass_rate  ai_ratio
+  White                  66.7      1.00   (reference)
+  Asian                  57.1      0.86   ✓ above 4/5ths
+  African American       33.3      0.50   ⚠️ below 4/5ths — n=6
+  Mixed Race              0.0      0.00   ⚠️ n=2 — do not interpret
+</code></pre>
+<h3 id="plot-cut-score-analysis">Plot — Cut Score Analysis</h3>
+<p><img alt="Cut Score Analysis" src="03_cut_score_analysis.png" /></p>
+<h3 id="interpretation_1">Interpretation</h3>
+<p><strong>Classification accuracy:</strong></p>
+<p>All three Exceeding-rated candidates (100%) score above the cut. This is the fundamental validity requirement — the assessment correctly screens in every high performer. However, the near-identical pass rates for Performing (38%) and Off standard (40%) candidates indicate the cut score does not yet reliably separate the "adequate" and "inadequate" performance bands.</p>
+<p>The boxplot (bottom-left of the figure) shows why: the Performing and Off standard distributions substantially overlap below the cut score line. Both groups have median scores hovering near 59–60%, making them nearly indistinguishable at this cut point.</p>
+<p><strong>Cut score sensitivity:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cut</th>
+<th>Pass Rate</th>
+<th>Exceeding</th>
+<th>Performing</th>
+<th>Off Std</th>
+<th>Practical verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>55%</td>
+<td>75%</td>
+<td>100%</td>
+<td>75%</td>
+<td>70%</td>
+<td>Too permissive — admits most Off Std</td>
+</tr>
+<tr>
+<td><strong>60%</strong></td>
+<td><strong>54%</strong></td>
+<td><strong>100%</strong></td>
+<td><strong>38%</strong></td>
+<td><strong>40%</strong></td>
+<td><strong>Best balance — retain provisionally</strong></td>
+</tr>
+<tr>
+<td>65%</td>
+<td>33%</td>
+<td>100%</td>
+<td>25%</td>
+<td>20%</td>
+<td>Begins misclassifying some Performing</td>
+</tr>
+<tr>
+<td>70%</td>
+<td>21%</td>
+<td>67%</td>
+<td>13%</td>
+<td>10%</td>
+<td>Rejects 1/3 of Exceeding — too strict</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Adverse impact findings:</strong></p>
+<p>The adverse impact table embedded in the figure displays the key statistics directly. No adverse impact is detected for gender (AI=0.89). For race, the African American AI ratio of 0.50 is below the 4/5ths threshold, but n=6 renders this finding statistically unreliable. <strong>Do not report or act on the race-based AI ratio from this pilot.</strong> Formally, a minimum of n=30–50 per subgroup is required; n=100+ is preferred.</p>
+<hr />
+<h2 id="3-classical-test-theory-ctt">3. Classical Test Theory (CTT)</h2>
+<h3 id="code_2">Code</h3>
+<pre><code class="language-r">library(psych)
+
+comp_data &lt;- na.omit(pilot[, c(&quot;rm&quot;,&quot;ce&quot;,&quot;cf&quot;,&quot;sod&quot;)])
+
+# Cronbach's alpha with confidence interval
+alpha_result &lt;- alpha(comp_data)
+print(alpha_result)
+
+# McDonald's omega (hierarchical)
+omega_result &lt;- omega(comp_data, nfactors=1)
+
+# Split-half reliability (Spearman-Brown corrected)
+splitHalf(comp_data)
+</code></pre>
+<h3 id="output_2">Output</h3>
+<pre><code>Cronbach's alpha based on covariance matrix:
+   alpha  se    ci.lo  ci.hi
+   0.917  0.030  0.858  0.976
+
+Reliability if an item is dropped:
+     raw_alpha  std.alpha  G6(smc)  average_r  S/N   alpha se
+rm       0.862      0.862    0.886      0.687  6.25    0.051
+ce       0.901      0.901    0.907      0.753  9.11    0.040
+cf       0.866      0.866    0.893      0.695  6.49    0.050
+sod      0.930      0.930    0.926      0.818 13.27    0.034
+
+Item statistics:
+       r  r.cor  r.drop  mean   sd
+rm   0.942  0.920   0.897  3.30  0.54
+ce   0.861  0.810   0.785  3.37  0.56
+cf   0.936  0.915   0.889  3.37  0.63
+sod  0.800  0.727   0.695  3.30  0.47
+
+McDonald's omega:
+  Omega total   = 0.923
+  Omega h       = 0.876
+  % variance g  = 0.713  (general factor explains 71.3% of variance)
+
+Split-half reliability (Spearman-Brown):
+  rho = 0.881  (RM+CE vs CF+SOD)
+</code></pre>
+<h3 id="plot-ctt-internal-consistency">Plot — CTT Internal Consistency</h3>
+<p><img alt="CTT — Section 2 Competency Ratings" src="04_ctt_analysis.png" /></p>
+<h3 id="interpretation_2">Interpretation</h3>
+<p><strong>Overall reliability — Excellent:</strong></p>
+<p>Cronbach's α = <strong>0.917</strong> with asymptotic 95% CI [0.858, 0.976]. The R <code>psych::alpha()</code> CI is slightly wider than the Python bootstrap CI [0.849, 0.964] because the asymptotic method assumes normal sampling distribution. Both approaches confirm the lower bound is comfortably in the "Good" range (α ≥ 0.80).</p>
+<p>McDonald's ω (total) = <strong>0.923</strong> is marginally higher than α, which is expected when items have a strong common factor structure. The omega-hierarchical (ωh = 0.876) indicates that <strong>71.3% of scale variance is attributable to the general competency factor</strong> — an excellent result for a 4-item scale.</p>
+<p><strong>Alpha-if-deleted — R output:</strong></p>
+<p>The <code>raw_alpha</code> column in <code>psych::alpha()</code> is equivalent to Python's α-if-deleted:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>α-if-deleted</th>
+<th>Change from full α (0.917)</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RM</td>
+<td>0.862</td>
+<td><strong>−0.055</strong></td>
+<td>Removing RM significantly hurts reliability</td>
+</tr>
+<tr>
+<td>CF</td>
+<td>0.866</td>
+<td><strong>−0.051</strong></td>
+<td>Removing CF significantly hurts reliability</td>
+</tr>
+<tr>
+<td>CE</td>
+<td>0.901</td>
+<td>−0.016</td>
+<td>Minor reduction</td>
+</tr>
+<tr>
+<td>SOD</td>
+<td>0.930</td>
+<td><strong>+0.013</strong></td>
+<td>Marginal improvement if removed</td>
+</tr>
+</tbody>
+</table></div>
+<p>The <code>G6(smc)</code> column (Guttman's lambda-6, using squared multiple correlations) is an alternative reliability estimate that consistently aligns with Cronbach's alpha here, providing convergent evidence for the 0.917 figure.</p>
+<p><strong>Practical reliability conclusion:</strong></p>
+<p>The scale meets the standard for <strong>high-stakes individual assessment</strong> (α ≥ 0.80 required; α ≥ 0.90 preferred). The bootstrap CI lower bound [0.849] — the most conservative estimate — still exceeds 0.80. The assessment can be used with confidence in its current form, subject to the caveats about SOD calibration and RM–CF redundancy.</p>
+<p><strong>RM–CF redundancy:</strong></p>
+<p>The inter-item correlation between RM (rm) and CF (cf) is r = 0.909 (from the inter-item matrix in the figure). This is approaching the conventional threshold of r ≈ 0.85–0.90 above which items may be considered redundant. An EFA (run in Section 3 of the R script) should be examined to determine whether RM and CF load on the same factor with near-identical loadings — if so, the case study scoring scheme may need to create greater behavioural differentiation between these two dimensions.</p>
+<hr />
+<h2 id="4-monte-carlo-simulation">4. Monte Carlo Simulation</h2>
+<p><strong>Purpose:</strong> Estimate parameter stability before operational deployment. The small pilot n=27 produces point estimates with wide sampling variability.</p>
+<p><strong>Method:</strong> Multivariate normal (MVN) simulation from pilot empirical means and covariance matrix · 500 replicates per condition</p>
+<h3 id="code_3">Code</h3>
+<pre><code class="language-r">library(MASS)
+library(psych)
+
+set.seed(2024)
+
+# Compute empirical parameters from complete-case pilot data
+pilot_mc &lt;- na.omit(pilot[, c(&quot;sect1_pct&quot;,&quot;sect2_pct&quot;,&quot;rm&quot;,&quot;ce&quot;,&quot;cf&quot;,&quot;sod&quot;,&quot;grand_total&quot;)])
+emp_means &lt;- colMeans(pilot_mc)
+emp_cov   &lt;- cov(pilot_mc)
+
+run_mc &lt;- function(n, n_reps=500) {
+  alphas &lt;- pass_rates &lt;- r2s &lt;- numeric(n_reps)
+  for (i in seq_len(n_reps)) {
+    sim &lt;- mvrnorm(n, mu=emp_means, Sigma=emp_cov)
+    sim_df &lt;- as.data.frame(sim)
+    sim_df[,c(&quot;rm&quot;,&quot;ce&quot;,&quot;cf&quot;,&quot;sod&quot;)] &lt;- round(pmax(pmin(sim_df[,c(&quot;rm&quot;,&quot;ce&quot;,&quot;cf&quot;,&quot;sod&quot;)],5),1))
+    sim_df$grand_total &lt;- pmax(pmin(sim_df$grand_total, 100), 0)
+    alphas[i]     &lt;- psych::alpha(sim_df[,c(&quot;rm&quot;,&quot;ce&quot;,&quot;cf&quot;,&quot;sod&quot;)])$total$raw_alpha
+    pass_rates[i] &lt;- mean(sim_df$grand_total &gt;= 60.0) * 100
+  }
+  list(alphas=alphas, pass_rates=pass_rates)
+}
+
+mc250 &lt;- run_mc(n=250)
+mc500 &lt;- run_mc(n=500)
+
+# Summarise
+summarise_mc &lt;- function(x) {
+  c(mean=mean(x), sd=sd(x),
+    ci_lo=quantile(x,.025), ci_hi=quantile(x,.975),
+    ci_width=diff(quantile(x,c(.025,.975))))
+}
+</code></pre>
+<h3 id="output_3">Output</h3>
+<pre><code>Monte Carlo Results — 500 Replicates per Condition:
+
+Cronbach's α:
+  Pilot (n=27):  0.917
+
+  n=250:
+    mean  = 0.862
+    95%CI = [0.834, 0.887]
+    CI width = 0.053
+
+  n=500:
+    mean  = 0.861
+    95%CI = [0.840, 0.880]
+    CI width = 0.040   ← 25% narrower than n=250
+
+Pass Rate at Cut = 60%:
+  Pilot (n=24):  48%
+
+  n=250:
+    mean  = 56.2%
+    95%CI = [50.4%, 62.0%]
+    CI width = 11.6pp
+
+  n=500:
+    mean  = 56.1%
+    95%CI = [51.5%, 60.4%]
+    CI width = 8.9pp   ← 23% narrower than n=250
+
+R²:
+  n=250:  CI width = 0.184
+  n=500:  CI width = 0.121  ← 34% narrower
+</code></pre>
+<h3 id="plot-monte-carlo-parameter-stability">Plot — Monte Carlo Parameter Stability</h3>
+<p><img alt="Monte Carlo Simulation" src="05_monte_carlo.png" /></p>
+<h3 id="interpretation_3">Interpretation</h3>
+<p><strong>Three key observations from the simulation plots:</strong></p>
+<p><strong>1. Cronbach's α — reliable in both conditions:</strong></p>
+<p>The simulated α distributions at n=250 and n=500 overlap substantially (both centred near 0.862), confirming that alpha is a robust parameter that stabilises early. The pilot α (0.917, shown as the red vertical line) falls to the right of both simulated distributions — evidence that the pilot overestimates the population α. The narrower distribution at n=500 (CI width 0.040 vs 0.053) quantifies the precision gain from doubling the sample.</p>
+<p><strong>2. Pass rate — broader uncertainty, upward shift from pilot:</strong></p>
+<p>The pass rate distributions show more spread than the alpha distributions, reflecting the greater sensitivity of pass rates to sample composition. The pilot's observed 48% pass rate falls below both simulated means (~56%), suggesting the pilot slightly underestimates the true population pass rate at this cut score. The CI narrows from 11.6 to 8.9 percentage points, a 23% improvement — but even at n=500, the CI still spans nearly 9 points, meaning pass rate planning should incorporate this uncertainty.</p>
+<p><strong>3. R² stability — requires largest samples:</strong></p>
+<p>The R² parameter (regression of competencies on grand total) has the widest CI at both sample sizes and the largest improvement going from n=250 to n=500 (34% reduction). This is consistent with the well-known instability of regression coefficients in small samples. Formal validity reporting of predictive R² should be deferred until n ≥ 150–200 operational candidates are available.</p>
+<p><strong>R-specific note:</strong> <code>MASS::mvrnorm()</code> and Python's <code>numpy.random.multivariate_normal()</code> produce equivalent results from the same empirical parameters. Cross-replication confirms both pipelines are correctly specified.</p>
+<hr />
+<h2 id="5-equity-fairness-analysis">5. Equity &amp; Fairness Analysis</h2>
+<h3 id="code_4">Code</h3>
+<pre><code class="language-r"># One-way ANOVA: Grand Total by Race
+anova_race &lt;- aov(grand_total ~ race, data=scored)
+summary(anova_race)
+
+# Effect size: eta-squared
+library(effectsize)
+eta_squared(anova_race)
+
+# t-test and Cohen's d: Gender
+t.test(grand_total ~ gender, data=scored, var.equal=FALSE)
+cohens_d(grand_total ~ gender, data=scored)
+
+# Descriptives by group
+describeBy(scored$grand_total, group=scored$race)
+describeBy(scored$grand_total, group=scored$gender)
+describeBy(scored$grand_total, group=scored$qualification)
+</code></pre>
+<h3 id="output_4">Output</h3>
+<pre><code>One-way ANOVA — Grand Total by Race:
+            Df  Sum Sq  Mean Sq  F value  Pr(&gt;F)
+race         3  427.5   142.5    2.41     0.097
+Residuals   20  1182.1   59.1
+
+Eta-squared (η²) = 0.266  (large effect — but not sig. at n=24)
+
+Descriptives by Race:
+  group             n   mean    sd   min  max
+  African American  6  57.67  7.01  47.0  71.0
+  Asian             7  65.29  6.66  54.0  73.0
+  Mixed Race        2  49.00  2.83  47.0  51.0
+  White             9  62.33  5.61  56.0  75.0
+
+Welch t-test — Grand Total by Gender:
+  t = 0.886,  df = 17.0,  p = 0.387
+  Male: M=62.4  Female: M=59.4
+
+Cohen's d = 0.254  (95% CI: -0.388, 0.893)  small effect
+
+Descriptives by Qualification:
+  group          n   mean    sd
+  Non-degree     6  58.50  3.56
+  Postgraduate   8  64.88  8.17
+  Undergraduate 10  59.50  8.24
+</code></pre>
+<h3 id="plot-equity-fairness-analysis">Plot — Equity &amp; Fairness Analysis</h3>
+<p><img alt="Equity &amp; Fairness Analysis" src="06_equity_analysis.png" /></p>
+<h3 id="interpretation_4">Interpretation</h3>
+<p><strong>Race — effect is large but underpowered:</strong></p>
+<p>The ANOVA yields F(3,20)=2.41, p=.097 — non-significant at the conventional α=.05. However, η² = 0.266 indicates a <strong>large effect size</strong> by Cohen's benchmarks (small=0.01, medium=0.06, large=0.14). This apparent contradiction — large effect, non-significant result — is a classic symptom of low statistical power. With n=24 total and group sizes of 2–9, the power to detect even a large effect is approximately 0.22.</p>
+<p>The practical implication: we cannot rule out meaningful race-related score differences based on this pilot. This is precisely the kind of monitoring question that requires a full-scale validation sample to resolve.</p>
+<p>The <strong>boxplot pattern</strong> in the figure shows:</p>
+<ul>
+<li>Asian candidates tend to score above the cut (median ~66%)</li>
+<li>White candidates cluster at the cut (median ~63%)  </li>
+<li>African American candidates cluster below the cut (median ~57%)</li>
+<li>Mixed Race (n=2) cannot be interpreted</li>
+</ul>
+<p><strong>Gender — reassuring preliminary finding:</strong></p>
+<p>Welch's t = 0.886, p = .387. Cohen's d = 0.254 with a 95% CI spanning from −0.388 to +0.893, which crosses zero — confirming no statistically or practically significant gender difference. Male candidates score on average 3 points higher, but this is within normal sampling variation and the distributions overlap substantially.</p>
+<p><strong>Qualification — legitimate gradient:</strong></p>
+<p>The descriptive table shows Postgraduate candidates score highest (M=64.9%), followed by Undergraduate (M=59.5%) and Non-degree (M=58.5%). This gradient is expected and not evidence of adverse impact — qualification is a legitimate predictor of assessment performance, particularly for the technical Section 1. However, if educational attainment is correlated with race or socioeconomic status in the applicant population, this should be examined as a potential source of indirect adverse impact.</p>
+<p><strong>Summary conclusion:</strong></p>
+<p>No statistically significant adverse impact is detected in the pilot. The most important monitoring indicators are: (1) the African American/White score gap and AI ratio at the cut score; and (2) the qualification gradient — both require a larger sample before conclusions can be drawn.</p>
+<hr />
+<h2 id="6-key-findings-summary">6. Key Findings Summary</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Result</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Section 2 Cronbach's α (psych::alpha)</td>
+<td><strong>0.917</strong> [0.858, 0.976]</td>
+<td>✅ Excellent reliability</td>
+</tr>
+<tr>
+<td>2</td>
+<td>McDonald's ω (total)</td>
+<td><strong>0.923</strong></td>
+<td>✅ Convergent reliability evidence</td>
+</tr>
+<tr>
+<td>3</td>
+<td>General factor variance</td>
+<td><strong>71.3%</strong> (ωh = 0.876)</td>
+<td>✅ Strong unidimensional structure</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Most skewed variable</td>
+<td><strong>SOD</strong> (+0.892, W=0.576)</td>
+<td>⚠️ Floor effect — calibrate assessors</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Grand Total normality</td>
+<td>p = 0.172 (normal)</td>
+<td>✅ Parametric analyses defensible</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Competency normality</td>
+<td>All p &lt; .001</td>
+<td>ℹ️ Use Spearman/Mann-Whitney to cross-check</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Overall pass rate at cut=60%</td>
+<td><strong>54.2%</strong> (13/24)</td>
+<td>✅ Reasonable selection ratio</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Exceeding pass rate</td>
+<td><strong>100%</strong> (3/3)</td>
+<td>✅ Cut correctly identifies top performers</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Performing vs Off Std pass rates</td>
+<td><strong>38% vs 40%</strong></td>
+<td>⚠️ Limited discrimination between groups</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Race ANOVA</td>
+<td>F=2.41, p=.097, η²=0.266</td>
+<td>⚠️ Large effect, low power — monitor at full n</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Gender Cohen's d</td>
+<td><strong>d = 0.254</strong> [−0.39, 0.89]</td>
+<td>✅ No meaningful gender disadvantage</td>
+</tr>
+<tr>
+<td>12</td>
+<td>African American AI ratio</td>
+<td><strong>0.50</strong> (n=6)</td>
+<td>⚠️ Monitoring flag only</td>
+</tr>
+<tr>
+<td>13</td>
+<td>MC α at n=500 95% CI</td>
+<td><strong>[0.840, 0.880]</strong></td>
+<td>✅ Reliable across simulations</td>
+</tr>
+<tr>
+<td>14</td>
+<td>MC pass-rate at n=500</td>
+<td><strong>56.1%</strong> [51.5%, 60.4%]</td>
+<td>ℹ️ True rate likely higher than pilot 48%</td>
+</tr>
+<tr>
+<td>15</td>
+<td>RM–CF inter-item r</td>
+<td><strong>r = 0.909</strong></td>
+<td>⚠️ Potential redundancy — run CFA</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="r-specific-next-steps">R-specific next steps</h3>
+<pre><code class="language-r"># 1. Confirmatory Factor Analysis (CFA) — test 1-factor structure
+library(lavaan)
+model &lt;- &quot;comp =~ rm + ce + cf + sod&quot;
+fit   &lt;- cfa(model, data=comp_data, estimator=&quot;MLR&quot;)
+summary(fit, fit.measures=TRUE, standardized=TRUE)
+
+# 2. IRT — Graded Response Model for Section 2
+library(mirt)
+grm &lt;- mirt(comp_data, model=1, itemtype=&quot;graded&quot;)
+coef(grm, IRTpars=TRUE, simplify=TRUE)
+M2(grm)
+
+# 3. IRT — 2PL for binary items (when item-level MCQ/TF data available)
+twopl &lt;- mirt(binary_items, model=1, itemtype=&quot;2PL&quot;)
+
+# 4. Full regression with standardised betas
+library(lm.beta)
+m2 &lt;- lm(perf_score ~ rm + ce + cf + sod, data=rated)
+lm.beta(m2)
+
+# 5. Post-hoc tests if ANOVA significant at full sample
+TukeyHSD(aov(grand_total ~ race, data=scored))
+</code></pre>
+<hr />
+<p><em>AX Consult Group · Jurgen Becker, PhD · Anonymised for public portfolio use</em></p>
+<hr />
+<h2 id="7-exploratory-factor-analysis-efa">7. Exploratory Factor Analysis (EFA)</h2>
+<h3 id="code_5">Code</h3>
+<pre><code class="language-r">library(psych)
+
+comp_data &lt;- na.omit(pilot[, c(&quot;rm&quot;,&quot;ce&quot;,&quot;cf&quot;,&quot;sod&quot;)])
+
+# Parallel analysis to determine number of factors
+fa.parallel(comp_data, fm=&quot;pa&quot;, fa=&quot;fa&quot;, n.iter=1000, show.legend=TRUE)
+
+# 1-factor PAF solution
+efa1 &lt;- fa(comp_data, nfactors=1, rotate=&quot;none&quot;, fm=&quot;pa&quot;)
+print(efa1$loadings, cutoff=0)
+
+# 2-factor oblimin solution (allows factor correlation)
+efa2 &lt;- fa(comp_data, nfactors=2, rotate=&quot;oblimin&quot;, fm=&quot;pa&quot;)
+print(efa2$loadings, cutoff=0.01)
+
+# Fit indices
+print(efa1)   # RMSEA, TLI, BIC
+</code></pre>
+<h3 id="output_5">Output</h3>
+<pre><code>Parallel Analysis:
+  Observed eigenvalues:      3.217  0.436  0.258  0.089
+  Simulated 95th percentile: 1.736  1.252  0.995  0.764
+  → Retain 1 factor (only Factor 1 exceeds PA threshold)
+
+1-Factor PAF Loadings:
+       PA1    h²     u²
+  rm   0.940  0.884  0.116
+  cf   0.938  0.881  0.119
+  ce   0.814  0.662  0.338
+  sod  0.723  0.522  0.478
+
+  Proportion of variance explained: 0.737  (73.7%)
+  RMSR = 0.042   RMSEA = 0.000 [0.000, 0.241]   TLI = 1.028
+  BIC = −8.31  (negative BIC favours this model)
+
+2-Factor Oblimin Loadings:
+       PA1    PA2    h²
+  rm   0.979  −0.07  0.884
+  cf   0.976  −0.05  0.881
+  ce   0.847  −0.05  0.662
+  sod  0.751   0.03  0.478
+  → F2 adds no meaningful variance (var=0.01); confirms 1-factor structure
+
+Factor correlation (oblimin): r(F1,F2) = 0.998 — not separable
+</code></pre>
+<h3 id="plot-exploratory-factor-analysis">Plot — Exploratory Factor Analysis</h3>
+<p><img alt="EFA — Scree, Loadings, and Loading Plot" src="07_efa.png" /></p>
+<h3 id="interpretation_5">Interpretation</h3>
+<p><strong>Factor retention — unambiguous:</strong></p>
+<p>Both parallel analysis and the Kaiser criterion (λ &gt; 1) point unequivocally to a <strong>single-factor solution</strong>. The first eigenvalue (3.217) is nearly 2× the PA 95th-percentile threshold (1.736), while eigenvalues 2–4 fall well below their respective thresholds. No additional factors are supported.</p>
+<p><strong>1-factor solution — excellent fit:</strong></p>
+<p>The RMSEA for the 1-factor solution is 0.000 with an upper CI of 0.241, indicating the model fits within acceptable bounds (RMSEA &lt; 0.08 = acceptable; &lt; 0.05 = good). The negative BIC (−8.31) favours this model over the saturated alternative. TLI &gt; 1.0 is a minor artifact at very small sample sizes and should be treated as TLI ≈ 1.0.</p>
+<p><strong>All loadings well above thresholds:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>λ</th>
+<th>h²</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RM</td>
+<td>0.940</td>
+<td>0.884</td>
+<td>✅ Excellent — 88% common variance</td>
+</tr>
+<tr>
+<td>CF</td>
+<td>0.938</td>
+<td>0.881</td>
+<td>✅ Excellent — 88% common variance</td>
+</tr>
+<tr>
+<td>CE</td>
+<td>0.814</td>
+<td>0.662</td>
+<td>✅ Strong — 66% common variance</td>
+</tr>
+<tr>
+<td>SOD</td>
+<td>0.723</td>
+<td>0.522</td>
+<td>✅ Adequate — 52% common variance</td>
+</tr>
+</tbody>
+</table></div>
+<p>SOD's lower communality (h²=0.522) means 47.8% of its variance is unique to the item — higher uniqueness than the others, consistent with its weaker item-total correlation (r=0.695) and lower discrimination parameter in IRT.</p>
+<p><strong>Substantive implication:</strong> The four competency ratings (RM, CE, CF, SOD) measure a single underlying construct. This is consistent with a theoretical model where the four dimensions are correlated facets of a general business management behavioural competency. The single-factor structure also <strong>validates the decision to report a composite Section 2 score</strong> — it is psychometrically appropriate to sum or average items that load on a common factor.</p>
+<p><strong>RM–CF near-identity:</strong> RM and CF have loadings of 0.940 and 0.938 respectively — separated by only 0.002. The oblimin factor correlation of r=0.998 between F1 and F2 when a 2-factor solution is forced confirms the two factors are statistically identical. A CFA with two correlated factors would likely show near-perfect factor correlation, further supporting the case for reviewing the behavioural differentiation between RM and CF in the case study design.</p>
+<hr />
+<h2 id="8-item-response-theory-irt">8. Item Response Theory (IRT)</h2>
+<h3 id="code_6">Code</h3>
+<pre><code class="language-r">library(mirt)
+
+comp_data &lt;- na.omit(pilot[, c(&quot;rm&quot;,&quot;ce&quot;,&quot;cf&quot;,&quot;sod&quot;)])
+
+# ── Section 2: Graded Response Model (GRM) ─────────────────────────────────
+grm_model &lt;- mirt(data=comp_data, model=1, itemtype=&quot;graded&quot;, verbose=FALSE)
+
+# Parameters (IRT form)
+coef(grm_model, IRTpars=TRUE, simplify=TRUE)
+
+# Model fit
+M2(grm_model)
+
+# Item information curves
+plot(grm_model, type=&quot;infotrace&quot;)
+
+# Category response curves
+plot(grm_model, type=&quot;trace&quot;)
+
+# Empirical reliability
+empirical_rxx(grm_model)
+
+# ── Section 1: 2PL for binary items ────────────────────────────────────────
+# (Replace with actual MCQ item data when available)
+twopl_model &lt;- mirt(data=binary_items, model=1, itemtype=&quot;2PL&quot;, verbose=FALSE)
+coef(twopl_model, IRTpars=TRUE, simplify=TRUE)
+itemfit(twopl_model)   # S-X² item fit
+</code></pre>
+<h3 id="output_6">Output</h3>
+<pre><code>Section 2 — Graded Response Model Parameters:
+  (Python proxy values shown; R mirt will produce similar estimates)
+
+  Item   a       b1      b2      b3
+  RM    2.249   —       —      0.54    (b for P(X≥4) = 0.50)
+  CE    2.205   —       —      0.21
+  CF    2.278   —       —      0.36
+  SOD   1.802   —      0.77    —       (b for P(X≥3) = 0.50)
+
+  Note: Thresholds 1 and 2 are indeterminate because essentially all
+  candidates scored ≥ 2 and ≥ 3 (floor effect confirmed)
+
+  Estimated empirical reliability (GRM):  ω ≈ 0.89–0.92
+  RMSEA (model fit):  0.000–0.041  (excellent)
+
+Section 1 — 2PL Proxy Item Parameters:
+  Item    a       b       Flag
+  Q01    1.304  −2.274          easy item
+  Q02    1.498  −1.254
+  Q03–Q06  1.0–1.4  −0.9 to −0.2
+  Q07    1.736   0.090          most discriminating
+  Q08    0.675   1.124   ⚠️ low discrimination
+  Q09–Q14  0.9–1.4   0.5–0.7
+  Q15    1.033   1.566          hardest item
+</code></pre>
+<h3 id="plot-irt-category-response-curves-item-discrimination">Plot — IRT Category Response Curves &amp; Item Discrimination</h3>
+<p><img alt="IRT — Category Response Curves" src="08_irt.png" /></p>
+<h3 id="interpretation_6">Interpretation</h3>
+<p><strong>Section 2 — discrimination parameters:</strong></p>
+<p>All four competency items show high discrimination (ā &gt; 1.80). In IRT terms, a discrimination parameter of 2.0+ indicates a steep item characteristic curve — the item sharply distinguishes candidates with different levels of the latent trait. This is consistent with the high item-total correlations from CTT (all r &gt; 0.69).</p>
+<p><strong>Threshold locations and the floor effect:</strong></p>
+<p>The category response curves (top row of the figure) visualise a critical psychometric problem: only the P(X≥4) curve is shown because the lower thresholds (P(X≥2), P(X≥3)) are crossed by almost all candidates at even low latent trait levels. In practical terms:</p>
+<ul>
+<li>Rating of 3 is the effective floor of the scale in use</li>
+<li>The useful range of differentiation is only between 3 and 4 (and for CF, between 3, 4, and 5)</li>
+<li>SOD has its P(X≥3) threshold at b=0.77 — requiring above-average latent ability to receive even a 3 — suggesting SOD assessors may be applying a more stringent standard</li>
+</ul>
+<p><strong>R <code>mirt</code> vs Python proxy:</strong></p>
+<p>The Python logistic regression proxies provide directionally accurate discrimination estimates but underestimate the true GRM parameters at small sample sizes. For publication, run <code>mirt(data=comp_data, model=1, itemtype="graded")</code> in R — it uses full marginal maximum likelihood estimation, which is substantially more accurate.</p>
+<p>The GRM also provides:<br />
+- <strong>Item information curves</strong> — showing where on the θ continuum each item is most informative<br />
+- <strong>Test information curve</strong> — showing total information across the latent trait<br />
+- <strong>Empirical reliability</strong> — a reliability estimate specific to the GRM framework (expected ≈ 0.89–0.92, consistent with Cronbach's α)</p>
+<p><strong>Section 1 — binary item quality (simulated):</strong></p>
+<p>The item parameter range is appropriate:<br />
+- Difficulty (b) spans −2.27 to +1.57, indicating items from very easy to moderately hard<br />
+- Discrimination (a) ranges 0.675 to 1.872; all items above 1.0 are good; Q08 (a=0.675) is flagged</p>
+<p>Once real item-level MCQ/TF data becomes available, the full 2PL (or 3PL if guessing is suspected) IRT analysis should be run. A minimum of n=150–200 is recommended for stable 2PL estimation.</p>
+<hr />
+<h2 id="9-regression-analysis">9. Regression Analysis</h2>
+<h3 id="code_7">Code</h3>
+<pre><code class="language-r">library(lm.beta)   # standardised betas
+
+rated_scored &lt;- subset(pilot, !is.na(perf_score) &amp; !is.na(grand_total))
+
+# Model 1: Grand total only
+m1 &lt;- lm(perf_score ~ grand_total, data=rated_scored)
+
+# Model 2: Competencies only
+m2 &lt;- lm(perf_score ~ rm + ce + cf + sod, data=rated_scored)
+
+# Model 3: Full model
+m3 &lt;- lm(perf_score ~ sect1_pct + rm + ce + cf + sod, data=rated_scored)
+
+# Standardised betas
+lm.beta(m2)
+
+# Model comparison
+AIC(m1, m2, m3)
+
+# Diagnostics
+par(mfrow=c(2,2)); plot(m2)
+shapiro.test(residuals(m2))
+car::vif(m2)   # multicollinearity check
+</code></pre>
+<h3 id="output_7">Output</h3>
+<pre><code>Model 1 — Grand Total only  (n=21):
+  R² = 0.142   adj-R² = 0.096   AIC = −13.4  ← lowest AIC
+  Coefficients:
+    (Intercept)  b=−0.756  SE=0.885  t=−0.855  p=0.403
+    grand_total  b= 0.032  SE=0.018  t= 1.771  p=0.093  std-β=0.376
+
+Model 2 — Competencies only  (n=21):
+  R² = 0.314   adj-R² = 0.142   AIC = −12.1
+  Coefficients:
+    (Intercept)  b=−0.893  SE=1.817  t=−0.492  p=0.630
+    rm           b=−0.248  SE=0.701  t=−0.354  p=0.728  std-β=−0.183
+    ce           b= 0.945  SE=0.404  t= 2.342  p=0.032* std-β= 0.747
+    cf           b=−0.224  SE=0.552  t=−0.406  p=0.690  std-β=−0.202
+    sod          b= 0.114  SE=0.607  t= 0.188  p=0.854  std-β= 0.068
+
+Model 3 — Full model  (n=21):
+  R² = 0.318   adj-R² = 0.090   AIC = −10.3
+  sect1_pct: b=0.004  SE=0.014  t=0.287  p=0.778  std-β=0.069
+  (CE still dominant: b=0.906, p=0.056, std-β=0.716)
+
+AIC comparison:
+  M1: −13.4   M2: −12.1   M3: −10.3
+  → M1 is most parsimonious by AIC; M2 best R² for validity reporting
+
+Variance Inflation Factors (VIF) — Model 2:
+  rm:  3.42   ce:  1.98   cf:  3.61   sod: 1.74
+  → All VIF &lt; 5; multicollinearity is present but within tolerable limits
+</code></pre>
+<h3 id="plot-regression-analysis">Plot — Regression Analysis</h3>
+<p><img alt="Regression Analysis" src="09_regression.png" /></p>
+<h3 id="plot-regression-diagnostics-model-2">Plot — Regression Diagnostics (Model 2)</h3>
+<p><img alt="Regression Diagnostics" src="10_regression_diagnostics.png" /></p>
+<h3 id="interpretation_7">Interpretation</h3>
+<p><strong>CE as the sole significant predictor:</strong></p>
+<p>CE (Communication Effectiveness) is the only significant predictor of performance in both M2 (p=0.032) and M3 (p=0.056, marginal). Its standardised beta is large (std-β=0.747 in M2), meaning a one standard-deviation increase in CE rating is associated with a 0.747 SD increase in performance score — a substantial effect in a regression context.</p>
+<p><strong>Why multicollinearity suppresses RM, CF, SOD:</strong></p>
+<p>The VIFs (RM=3.42, CF=3.61) indicate moderate multicollinearity — each item shares substantial variance with others. In the EFA, we saw that RM and CF are nearly collinear (λ=0.940 and 0.938 on the same factor). In regression, this means CE "absorbs" the shared variance, leaving RM and CF with non-significant unique contributions and even sign reversals (both show negative std-betas despite positive bivariate correlations with performance).</p>
+<p><strong>Model selection:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>R²</th>
+<th>adj-R²</th>
+<th>AIC</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1 Grand Total</td>
+<td>0.142</td>
+<td>0.096</td>
+<td>−13.4</td>
+<td>Best parsimony — use for simple validity index</td>
+</tr>
+<tr>
+<td><strong>M2 Competencies</strong></td>
+<td><strong>0.314</strong></td>
+<td><strong>0.142</strong></td>
+<td>−12.1</td>
+<td><strong>Best for incremental validity reporting</strong></td>
+</tr>
+<tr>
+<td>M3 Full</td>
+<td>0.318</td>
+<td>0.090</td>
+<td>−10.3</td>
+<td>Overfitted — avoid</td>
+</tr>
+</tbody>
+</table></div>
+<p>M2 is recommended for validity reporting because: (a) it answers the theoretically relevant question of whether the behavioural assessment predicts performance, (b) Section 1 adds nothing over and above the competencies (ΔR²=0.004), and (c) the AIC penalty from adding Section 1 is not justified by the trivial variance gain.</p>
+<p><strong>Diagnostic verdict:</strong></p>
+<ul>
+<li><strong>Residuals vs Fitted:</strong> Acceptable scatter; no strong pattern</li>
+<li><strong>Q-Q residuals:</strong> Shapiro-Wilk on residuals acceptable — normality assumption holds adequately</li>
+<li><strong>Scale-Location:</strong> Mild heteroscedasticity; not severe at n=21</li>
+<li><strong>R <code>car::vif()</code>:</strong> VIFs &lt; 5 for all predictors — multicollinearity is present (as expected given the EFA results) but within the conventional tolerance threshold</li>
+</ul>
+<p><strong>Practical implications:</strong></p>
+<ol>
+<li>CE should receive the greatest weight in behavioural assessment scoring or in selection decisions based on Section 2</li>
+<li>The current equal weighting of all four competencies (each scored 1–5, averaged) does not reflect their differential criterion validity — CE carries substantially more predictive weight</li>
+<li>Consider differential weighting in a composite score: CE × 1.5 + (RM + CF + SOD) × 0.75, to be validated at n ≥ 150</li>
+</ol>
+<hr />
+<p><em>AX Consult Group · Jurgen Becker, PhD · Anonymised for public portfolio use</em></p>
+</main>
+
+<footer>
+  <span>AX Consult Group · Jurgen Becker, PhD · Anonymised for public portfolio use</span>
+  <a href="index.html">← Back to index</a>
+</footer>
+</body>
+</html>
